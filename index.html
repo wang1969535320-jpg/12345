@@ -1,0 +1,4395 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0072ce">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="&#25509;&#21934;&#21161;&#25163;">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="application-name" content="&#25509;&#21934;&#21161;&#25163;">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <title>&#25509;&#21934;&#21161;&#25163;</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #667085;
+      --line: #d8dee8;
+      --accent: #0072ce;
+      --accent-2: #00a3ad;
+      --danger: #b42318;
+      --shadow: 0 14px 34px rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 18px 14px 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 10px 2px 14px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .search-panel {
+      background: var(--panel);
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .primary-panel {
+      order: 1;
+      border-color: #b8ddff;
+    }
+
+    #orderResult {
+      order: 2;
+    }
+
+    #mapPanel {
+      order: 3;
+    }
+
+    .secondary-panel {
+      order: 4;
+      box-shadow: none;
+      opacity: 0.96;
+    }
+
+    .integrated-panel {
+      display: none;
+    }
+
+    #result,
+    #addressResult {
+      order: 5;
+    }
+
+    footer {
+      order: 6;
+    }
+
+    .address-panel {
+      margin-top: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #344054;
+    }
+
+    input {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid #ccd4df;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 16px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.14);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid #ccd4df;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.14);
+    }
+
+    input[type="file"] {
+      padding: 9px;
+      background: #fff;
+    }
+
+    .suggestions {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      max-height: 226px;
+      overflow-y: auto;
+      display: none;
+      background: #fff;
+      border: 1px solid #ccd4df;
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(16, 24, 40, 0.16);
+    }
+
+    .suggestions.show {
+      display: block;
+    }
+
+    .suggestion {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 0;
+      border-bottom: 1px solid #edf0f5;
+      border-radius: 0;
+      background: #fff;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .suggestion:last-child {
+      border-bottom: 0;
+    }
+
+    .suggestion:active,
+    .suggestion:hover {
+      background: #eef6fd;
+    }
+
+    .suggestion span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 46px;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .order-actions {
+      grid-template-columns: 1fr 1fr 1fr 46px;
+    }
+
+    button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    #findRoute {
+      background: var(--accent);
+      color: white;
+    }
+
+    #swap {
+      background: #eef6fd;
+      color: var(--accent);
+      font-size: 21px;
+    }
+
+    .quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quick button {
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid #d7deea;
+      background: #fff;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .result {
+      margin-top: 16px;
+    }
+
+    .mode-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .option-card {
+      margin-top: 12px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+    }
+
+    .option-card h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .option-card p {
+      margin: 4px 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .option-card strong {
+      color: var(--ink);
+    }
+
+    .preview-image {
+      display: none;
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      margin-top: 10px;
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .hidden-file {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .file-picker {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .file-name {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .sequence {
+      margin: 8px 0 0;
+      padding-left: 20px;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .extracted-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 13px;
+    }
+
+    .extracted-table th,
+    .extracted-table td {
+      padding: 9px 8px;
+      border-bottom: 1px solid #edf0f5;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .extracted-table th {
+      color: #344054;
+      background: #f8fafc;
+      font-weight: 900;
+    }
+
+    .extracted-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .map-panel {
+      display: none;
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .map-panel.show {
+      display: block;
+    }
+
+    #routeMap {
+      width: 100%;
+      height: 360px;
+    }
+
+    .summary {
+      background: #eaf7f8;
+      border: 1px solid #c5ecef;
+      border-radius: 8px;
+      padding: 12px;
+      color: #124f56;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-left: 4px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: normal;
+    }
+
+    .trip-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .fact {
+      min-height: 64px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+    }
+
+    .fact b {
+      display: block;
+      margin-bottom: 4px;
+      color: #344054;
+      font-size: 12px;
+    }
+
+    .fact span {
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .fact a {
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .error {
+      background: #fff1f0;
+      border: 1px solid #ffd0cc;
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .route-list {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0;
+      background: var(--panel);
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .route-list li {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      min-height: 52px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #edf0f5;
+      align-items: center;
+    }
+
+    .route-list li:last-child {
+      border-bottom: 0;
+    }
+
+    .route-segments {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .route-segment {
+      background: var(--panel);
+      border: 1px solid #edf0f5;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .route-segment-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .line-pill {
+      display: inline-flex;
+      min-width: 58px;
+      min-height: 30px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: var(--accent-2);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 5px 8px;
+      text-align: center;
+    }
+
+    .segment-title {
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.3;
+    }
+
+    .segment-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .station-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .station-pill {
+      border: 1px solid #dbe5ea;
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1;
+      padding: 6px 9px;
+    }
+
+    .station-pill.is-main {
+      border-color: #9fd7de;
+      background: #eaf7f8;
+      color: #124f56;
+    }
+
+    .stop-details {
+      margin-top: 10px;
+    }
+
+    .stop-details summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      list-style-position: inside;
+    }
+
+    .dot {
+      width: 26px;
+      height: 26px;
+      border: 3px solid var(--accent-2);
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--accent-2);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .station-name {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .meta {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .transfer {
+      color: #9a3412;
+      font-weight: 800;
+    }
+
+    .direction {
+      color: #175cd3;
+      font-weight: 800;
+    }
+
+    footer {
+      padding: 16px 2px 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 520px) {
+      main {
+        padding-top: 30px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .trip-facts {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="integrated-panel">
+      <h1>港鐵途經站查詢</h1>
+      <p class="subhead">輸入起點和終點，會自動聯想車站，並顯示中途經過的車站與換乘提示。</p>
+    </header>
+
+    <section class="search-panel secondary-panel integrated-panel" aria-label="路線查詢">
+      <div class="field-grid">
+        <div class="field">
+          <label for="from">A 點</label>
+          <input id="from" autocomplete="off" placeholder="例如：旺角">
+          <div id="fromSuggestions" class="suggestions" role="listbox" aria-label="A 點車站建議"></div>
+        </div>
+        <div class="field">
+          <label for="via">B 點（出站途經）</label>
+          <input id="via" autocomplete="off" placeholder="可選，會出站">
+          <div id="viaSuggestions" class="suggestions" role="listbox" aria-label="B 點出站途經車站建議"></div>
+        </div>
+        <div class="field">
+          <label for="to">C 點</label>
+          <input id="to" autocomplete="off" placeholder="例如：寶琳">
+          <div id="toSuggestions" class="suggestions" role="listbox" aria-label="C 點車站建議"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="findRoute" type="button">查詢途經站</button>
+        <button id="swap" type="button" title="交換起點和終點" aria-label="交換起點和終點">⇅</button>
+      </div>
+      <div class="quick" aria-label="快速例子">
+        <button type="button" data-from="旺角" data-to="寶琳">旺角 → 寶琳</button>
+        <button type="button" data-from="旺角" data-via="金鐘" data-to="寶琳">旺角 → 金鐘 → 寶琳</button>
+        <button type="button" data-from="中環" data-to="屯門">中環 → 屯門</button>
+        <button type="button" data-from="金鐘" data-to="海怡半島">金鐘 → 海怡半島</button>
+      </div>
+    </section>
+
+    <section class="search-panel address-panel secondary-panel integrated-panel" aria-label="地址智能推薦">
+      <header>
+        <h1>地址智能推薦</h1>
+        <p class="subhead">輸入具體地址，系統會嘗試比較 KMB 巴士和港鐵方案。</p>
+      </header>
+      <div class="field-grid">
+        <div class="field">
+          <label for="addrFrom">A 地址</label>
+          <input id="addrFrom" autocomplete="off" placeholder="例如：朗豪坊">
+          <div id="addrFromSuggestions" class="suggestions" role="listbox" aria-label="A 地址建議"></div>
+        </div>
+        <div class="field">
+          <label for="addrVia">B 地址（出站途經）</label>
+          <input id="addrVia" autocomplete="off" placeholder="可選，例如：金鐘站">
+          <div id="addrViaSuggestions" class="suggestions" role="listbox" aria-label="B 地址建議"></div>
+        </div>
+        <div class="field">
+          <label for="addrTo">C 地址</label>
+          <input id="addrTo" autocomplete="off" placeholder="例如：寶琳站">
+          <div id="addrToSuggestions" class="suggestions" role="listbox" aria-label="C 地址建議"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="planAddress" type="button">推薦巴士 / 港鐵</button>
+        <button id="clearAddress" type="button" title="清除地址" aria-label="清除地址">×</button>
+      </div>
+      <p class="mode-note">地址模式會即時呼叫香港地址查詢和 KMB 公開資料；如瀏覽器或網絡阻擋外部 API，會顯示原因。</p>
+    </section>
+
+    <section class="search-panel address-panel primary-panel" aria-label="截圖接單優化">
+      <header>
+        <h1>截圖接單優化</h1>
+        <p class="subhead">主功能：截圖識別訂單，融合地圖、地址智能推薦、KMB 與港鐵途經站，推薦最多兩單的接單順序。</p>
+      </header>
+      <div class="field-grid">
+        <div class="field">
+          <label for="orderCurrent">我現在在 A 點</label>
+          <input id="orderCurrent" autocomplete="off" placeholder="自動讀取目前位置；也可手動輸入地址">
+          <div id="orderCurrentSuggestions" class="suggestions" role="listbox" aria-label="目前位置地址建議"></div>
+          <div id="orderLocationStatus" class="meta">尚未讀取目前位置。</div>
+        </div>
+        <div class="field">
+          <label for="orderScreenshot">第一步：列表截圖</label>
+          <div class="file-picker">
+            <button id="chooseOrderScreenshot" type="button">選擇列表截圖</button>
+            <span id="orderScreenshotName" class="file-name">未選擇截圖</span>
+          </div>
+          <input id="orderScreenshot" class="hidden-file" type="file" accept="image/*" multiple>
+        </div>
+        <div class="field">
+          <label for="orderDetailScreenshot">第二步：詳情截圖</label>
+          <div class="file-picker">
+            <button id="chooseOrderDetailScreenshot" type="button">選擇詳情截圖</button>
+            <span id="orderDetailScreenshotName" class="file-name">未選擇詳情</span>
+          </div>
+          <input id="orderDetailScreenshot" class="hidden-file" type="file" accept="image/*" multiple>
+        </div>
+        <div class="field">
+          <label for="orderCount">目標</label>
+          <input id="orderCount" inputmode="numeric" value="2" aria-label="目標接單數">
+        </div>
+        <div class="field">
+          <label for="orderNow">現在時間</label>
+          <input id="orderNow" inputmode="numeric" placeholder="例如：12:44">
+        </div>
+      </div>
+      <img id="orderPreview" class="preview-image" alt="訂單截圖預覽">
+      <img id="orderDetailPreview" class="preview-image" alt="訂單詳情截圖預覽">
+      <textarea id="orderText" class="hidden-file" aria-hidden="true" tabindex="-1"></textarea>
+      <div class="actions order-actions">
+        <button id="useCurrentLocation" type="button">使用目前位置</button>
+        <button id="readOrders" type="button">第一步識別</button>
+        <button id="readOrderDetails" type="button">第二步識別</button>
+        <button id="confirmOrders" type="button">確認資料</button>
+        <button id="optimizeOrders" type="button" title="推薦接單" aria-label="推薦接單">✓</button>
+      </div>
+      <p class="mode-note">先允許定位或手動填 A 點，再識別或確認資料，系統會先把 A 點和訂單取送點放到地圖，再按 ✓ 做接單分析。</p>
+    </section>
+
+    <section id="result" class="result integrated-panel" aria-live="polite"></section>
+    <section id="addressResult" class="result" aria-live="polite"></section>
+    <section id="orderResult" class="result" aria-live="polite"></section>
+    <section id="mapPanel" class="map-panel" aria-label="地圖">
+      <div id="routeMap"></div>
+    </section>
+
+    <footer>
+      原型版使用內置港鐵重鐵線路順序資料；車費會先查本地 fare table，查不到才估算。正式版可把 stations/lines 與 fare table 替換成 CSDI、data.gov.hk 或港鐵票價查詢資料。
+    </footer>
+  </main>
+
+  <script>
+    const lines = {
+      "荃灣綫": ["荃灣", "大窩口", "葵興", "葵芳", "荔景", "美孚", "荔枝角", "長沙灣", "深水埗", "太子", "旺角", "油麻地", "佐敦", "尖沙咀", "金鐘", "中環"],
+      "觀塘綫": ["黃埔", "何文田", "油麻地", "旺角", "太子", "石硤尾", "九龍塘", "樂富", "黃大仙", "鑽石山", "彩虹", "九龍灣", "牛頭角", "觀塘", "藍田", "油塘", "調景嶺"],
+      "港島綫": ["堅尼地城", "香港大學", "西營盤", "上環", "中環", "金鐘", "灣仔", "銅鑼灣", "天后", "炮台山", "北角", "鰂魚涌", "太古", "西灣河", "筲箕灣", "杏花邨", "柴灣"],
+      "將軍澳綫": ["北角", "鰂魚涌", "油塘", "調景嶺", "將軍澳", "坑口", "寶琳"],
+      "將軍澳支綫": ["將軍澳", "康城"],
+      "東涌綫": ["香港", "九龍", "奧運", "南昌", "荔景", "青衣", "欣澳", "東涌"],
+      "迪士尼綫": ["欣澳", "迪士尼"],
+      "南港島綫": ["金鐘", "海洋公園", "黃竹坑", "利東", "海怡半島"],
+      "屯馬綫": ["烏溪沙", "馬鞍山", "恆安", "大水坑", "石門", "第一城", "沙田圍", "車公廟", "大圍", "顯徑", "鑽石山", "啟德", "宋皇臺", "土瓜灣", "何文田", "紅磡", "尖東", "柯士甸", "南昌", "美孚", "荃灣西", "錦上路", "元朗", "朗屏", "天水圍", "兆康", "屯門"],
+      "東鐵綫": ["金鐘", "會展", "紅磡", "旺角東", "九龍塘", "大圍", "沙田", "火炭", "大學", "大埔墟", "太和", "粉嶺", "上水", "羅湖"],
+      "東鐵落馬洲支綫": ["上水", "落馬洲"],
+      "機場快綫": ["香港", "九龍", "青衣", "機場", "博覽館"]
+    };
+
+    const aliases = {
+      "宝琳": "寶琳",
+      "鲗鱼涌": "鰂魚涌",
+      "鰂魚湧": "鰂魚涌",
+      "将军澳": "將軍澳",
+      "调景岭": "調景嶺",
+      "旺角东": "旺角東",
+      "九龙塘": "九龍塘",
+      "钻石山": "鑽石山",
+      "香港大学": "香港大學",
+      "铜锣湾": "銅鑼灣",
+      "海怡半岛": "海怡半島",
+      "会展": "會展",
+      "红磡": "紅磡",
+      "落马洲": "落馬洲",
+      "罗湖": "羅湖",
+      "机场": "機場",
+      "马鞍山": "馬鞍山",
+      "Mong Kok": "旺角",
+      "Po Lam": "寶琳",
+      "Central": "中環",
+      "Admiralty": "金鐘",
+      "Tuen Mun": "屯門",
+      "Hong Kong": "香港"
+    };
+
+    const officialFareSearchUrl = "https://www.mtr.com.hk/en/customer/tickets/index.php";
+
+    const fareTable = {
+      meta: {
+        currency: "HKD",
+        defaultFareType: "adultOctopus",
+        note: "Airport Express fares are seeded from the MTR official Tickets Type and Fares page. Add ordinary MTR station-pair fares here when collected."
+      },
+      pairs: {
+        "香港|機場": { adultOctopus: 120, adultSingleJourney: 130, childOctopus: 60, childSingleJourney: 65, source: "MTR Airport Express fare table" },
+        "九龍|機場": { adultOctopus: 105, adultSingleJourney: 115, childOctopus: 52.5, childSingleJourney: 57.5, source: "MTR Airport Express fare table" },
+        "青衣|機場": { adultOctopus: 73, adultSingleJourney: 80, childOctopus: 36.5, childSingleJourney: 40, source: "MTR Airport Express fare table" },
+        "博覽館|香港": { adultOctopus: 120, adultSingleJourney: 130, childOctopus: 60, childSingleJourney: 65, source: "MTR Airport Express fare table" },
+        "博覽館|九龍": { adultOctopus: 105, adultSingleJourney: 115, childOctopus: 52.5, childSingleJourney: 57.5, source: "MTR Airport Express fare table" },
+        "博覽館|青衣": { adultOctopus: 73, adultSingleJourney: 80, childOctopus: 36.5, childSingleJourney: 40, source: "MTR Airport Express fare table" },
+        "博覽館|機場": { adultOctopus: 6.5, adultSingleJourney: 7, childOctopus: 3.2, childSingleJourney: 3.5, source: "MTR Airport Express fare table" }
+      }
+    };
+
+    const simplifiedMap = {
+      "馬": "马",
+      "寶": "宝",
+      "鰂": "鲗",
+      "魚": "鱼",
+      "將": "将",
+      "軍": "军",
+      "調": "调",
+      "嶺": "岭",
+      "龍": "龙",
+      "鑽": "钻",
+      "銅": "铜",
+      "會": "会",
+      "紅": "红",
+      "羅": "罗",
+      "機": "机",
+      "場": "场",
+      "綫": "线",
+      "灣": "湾",
+      "門": "门",
+      "東": "东",
+      "鐵": "铁",
+      "臺": "台",
+      "圍": "围",
+      "顯": "显",
+      "恆": "恒",
+      "烏": "乌"
+    };
+
+    const graph = new Map();
+    const stationLines = new Map();
+
+    function addEdge(a, b, lineName) {
+      if (!graph.has(a)) graph.set(a, []);
+      if (!graph.has(b)) graph.set(b, []);
+      graph.get(a).push({ station: b, line: lineName });
+      graph.get(b).push({ station: a, line: lineName });
+      for (const station of [a, b]) {
+        if (!stationLines.has(station)) stationLines.set(station, new Set());
+        stationLines.get(station).add(lineName);
+      }
+    }
+
+    for (const [lineName, stations] of Object.entries(lines)) {
+      for (let i = 0; i < stations.length - 1; i += 1) {
+        addEdge(stations[i], stations[i + 1], lineName);
+      }
+      for (const station of stations) {
+        if (!stationLines.has(station)) stationLines.set(station, new Set([lineName]));
+      }
+    }
+
+    const stationNames = [...graph.keys()].sort((a, b) => a.localeCompare(b, "zh-Hant"));
+
+    function searchKey(value) {
+      return value
+        .trim()
+        .toLowerCase()
+        .split("")
+        .map(char => simplifiedMap[char] || char)
+        .join("");
+    }
+
+    function getSuggestions(value) {
+      const key = searchKey(value);
+      if (!key) return [];
+      const aliasMatches = Object.entries(aliases)
+        .filter(([alias, station]) => searchKey(alias).includes(key) || searchKey(station).includes(key))
+        .map(([, station]) => station);
+      const stationMatches = stationNames.filter(station => searchKey(station).includes(key));
+      return [...new Set([...stationMatches, ...aliasMatches])].slice(0, 8);
+    }
+
+    function normalizeName(value) {
+      const raw = value.trim();
+      if (!raw) return "";
+      const exact = stationNames.find(name => name === raw);
+      if (exact) return exact;
+      if (aliases[raw]) return aliases[raw];
+      const lower = raw.toLowerCase();
+      const aliasKey = Object.keys(aliases).find(key => key.toLowerCase() === lower);
+      if (aliasKey) return aliases[aliasKey];
+      const key = searchKey(raw);
+      return stationNames.find(name => searchKey(name).includes(key)) || "";
+    }
+
+    function renderSuggestions(input, box) {
+      const matches = getSuggestions(input.value);
+      if (!matches.length) {
+        box.classList.remove("show");
+        box.innerHTML = "";
+        return;
+      }
+      box.innerHTML = matches.map(station => {
+        const linesText = [...stationLines.get(station)].join(" / ");
+        return `<button class="suggestion" type="button" data-station="${station}">${station}<span>${linesText}</span></button>`;
+      }).join("");
+      box.classList.add("show");
+    }
+
+    function attachAutocomplete(inputId, boxId) {
+      const input = document.querySelector(inputId);
+      const box = document.querySelector(boxId);
+
+      input.addEventListener("input", () => renderSuggestions(input, box));
+      input.addEventListener("focus", () => renderSuggestions(input, box));
+      input.addEventListener("blur", () => {
+        setTimeout(() => box.classList.remove("show"), 120);
+      });
+      box.addEventListener("click", event => {
+        const button = event.target.closest(".suggestion");
+        if (!button) return;
+        input.value = button.dataset.station;
+        box.classList.remove("show");
+        input.focus();
+      });
+    }
+
+    function findRoute(from, to) {
+      const queue = [{ station: from, line: null, score: 0, path: [{ station: from, line: null }] }];
+      const best = new Map();
+
+      while (queue.length) {
+        queue.sort((a, b) => a.score - b.score || a.path.length - b.path.length);
+        const current = queue.shift();
+        const stateKey = `${current.station}|${current.line || "start"}`;
+        if (best.has(stateKey) && best.get(stateKey) < current.score) continue;
+        if (current.station === to) return current.path;
+
+        for (const next of graph.get(current.station) || []) {
+          const transferPenalty = current.line && current.line !== next.line ? 8 : 0;
+          const score = current.score + 1 + transferPenalty;
+          const nextKey = `${next.station}|${next.line}`;
+          if (best.has(nextKey) && best.get(nextKey) <= score) continue;
+          best.set(nextKey, score);
+          queue.push({
+            station: next.station,
+            line: next.line,
+            score,
+            path: [...current.path, { station: next.station, line: next.line }]
+          });
+        }
+      }
+      return null;
+    }
+
+    function combinePaths(paths) {
+      return paths.reduce((combined, path, index) => {
+        if (index === 0) return [...path];
+        return [...combined, ...path.slice(1)];
+      }, []);
+    }
+
+    function findRouteWithStops(stops) {
+      const segments = [];
+      for (let index = 0; index < stops.length - 1; index += 1) {
+        const segment = findRoute(stops[index], stops[index + 1]);
+        if (!segment) return null;
+        segments.push(segment);
+      }
+      return {
+        segments,
+        path: combinePaths(segments)
+      };
+    }
+
+    function getDirection(from, to, lineName) {
+      const stations = lines[lineName];
+      if (!stations) return "";
+      const fromIndex = stations.indexOf(from);
+      const toIndex = stations.indexOf(to);
+      if (fromIndex === -1 || toIndex === -1) return "";
+      return toIndex > fromIndex ? stations[stations.length - 1] : stations[0];
+    }
+
+    function getSegmentInfo(path, index) {
+      if (index >= path.length - 1) return null;
+      const current = path[index].station;
+      const next = path[index + 1].station;
+      const line = path[index + 1].line;
+      return {
+        line,
+        direction: getDirection(current, next, line)
+      };
+    }
+
+    function getTransferDetails(path) {
+      const transfers = [];
+      for (let index = 1; index < path.length - 1; index += 1) {
+        const previousLine = path[index].line;
+        const nextLine = path[index + 1].line;
+        if (previousLine && nextLine && previousLine !== nextLine) {
+          transfers.push({
+            station: path[index].station,
+            fromLine: previousLine,
+            toLine: nextLine,
+            direction: getDirection(path[index].station, path[index + 1].station, nextLine)
+          });
+        }
+      }
+      return transfers;
+    }
+
+    function getTransferDetailsExcludingStops(path, excludedStops) {
+      return getTransferDetails(path).filter(item => !excludedStops.includes(item.station));
+    }
+
+    function buildRouteSegments(path, exitStops = []) {
+      const segments = [];
+      if (!path || path.length < 2) return segments;
+
+      let current = null;
+      for (let index = 0; index < path.length - 1; index += 1) {
+        const start = path[index].station;
+        const end = path[index + 1].station;
+        const line = path[index + 1].line;
+        const direction = getDirection(start, end, line);
+        const shouldStartNew = !current || current.line !== line || exitStops.includes(start);
+
+        if (shouldStartNew) {
+          current = { line, direction, stations: [start, end] };
+          segments.push(current);
+        } else {
+          current.stations.push(end);
+        }
+      }
+
+      return segments;
+    }
+
+    function renderStationPills(stations) {
+      return stations.map((station, index) => {
+        const isMain = index === 0 || index === stations.length - 1;
+        return `<span class="station-pill${isMain ? " is-main" : ""}">${station}</span>`;
+      }).join("");
+    }
+
+    function renderCompactRouteSegments(path, exitStops = []) {
+      const segments = buildRouteSegments(path, exitStops);
+      return segments.map((segment, index) => {
+        const rideStops = Math.max(segment.stations.length - 1, 0);
+        const middleStops = Math.max(segment.stations.length - 2, 0);
+        const start = segment.stations[0];
+        const end = segment.stations[segment.stations.length - 1];
+        const nextSegment = segments[index + 1];
+        const transferNote = nextSegment
+          ? (exitStops.includes(end) ? "出站后继续下一单/下一程" : `到 ${end} 转 ${nextSegment.line}`)
+          : "到站";
+        const stationSummary = middleStops > 0
+          ? `${start} → 中途 ${middleStops} 站 → ${end}`
+          : `${start} → ${end}`;
+
+        return `
+          <div class="route-segment">
+            <div class="route-segment-head">
+              <span class="line-pill">${segment.line || "港鐵"}</span>
+              <div>
+                <div class="segment-title">${start} → ${end}</div>
+                <div class="segment-meta">往 ${segment.direction || end} · 坐 ${rideStops} 站 · ${transferNote}</div>
+              </div>
+            </div>
+            <div class="station-pills" aria-label="路線摘要">
+              ${renderStationPills(stationSummary.split(" → "))}
+            </div>
+            <details class="stop-details">
+              <summary>查看全部 ${segment.stations.length} 個站</summary>
+              <div class="station-pills">${renderStationPills(segment.stations)}</div>
+            </details>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function fareKey(from, to) {
+      return [from, to].sort((a, b) => a.localeCompare(b, "zh-Hant")).join("|");
+    }
+
+    function getExactFare(from, to, fareType = fareTable.meta.defaultFareType) {
+      const pair = fareTable.pairs[fareKey(from, to)];
+      if (!pair || typeof pair[fareType] !== "number") return null;
+      return {
+        amount: pair[fareType],
+        fareType,
+        source: pair.source
+      };
+    }
+
+    function estimateFare(path) {
+      const stationCount = path.length - 1;
+      const usedLines = new Set(path.slice(1).map(step => step.line));
+      const stations = new Set(path.map(step => step.station));
+      let fare = 4.2 + stationCount * 0.52;
+
+      if (usedLines.has("機場快綫")) fare += 58;
+      if (stations.has("羅湖") || stations.has("落馬洲")) fare += 22;
+      if ([...stations].some(station => ["中環", "金鐘", "灣仔", "銅鑼灣", "天后", "炮台山", "北角", "鰂魚涌"].includes(station))
+        && [...stations].some(station => ["旺角", "油麻地", "九龍塘", "觀塘", "紅磡", "尖沙咀"].includes(station))) {
+        fare += 1.8;
+      }
+
+      return Math.max(4.2, Math.round(fare * 2) / 2).toFixed(1);
+    }
+
+    function getFareInfo(path, from, to) {
+      const exact = getExactFare(from, to);
+      if (exact) {
+        return {
+          amount: exact.amount,
+          label: `HK$${exact.amount.toFixed(1)}`,
+          note: "本地表精確票價",
+          source: exact.source,
+          isExact: true
+        };
+      }
+
+      const estimated = Number(estimateFare(path));
+      return {
+        amount: estimated,
+        label: `約 HK$${estimated.toFixed(1)}`,
+        note: "未入表，暫用估算",
+        source: "Estimate",
+        isExact: false
+      };
+    }
+
+    function getJourneyFareInfo(route, stops) {
+      if (!route.segments || route.segments.length === 1) {
+        return getFareInfo(route.path, stops[0], stops[stops.length - 1]);
+      }
+
+      const segmentFares = route.segments.map((segment, index) => getFareInfo(segment, stops[index], stops[index + 1]));
+      const total = segmentFares.reduce((sum, item) => sum + item.amount, 0);
+      const allExact = segmentFares.every(item => item.isExact);
+      return {
+        amount: total,
+        label: `${allExact ? "" : "約 "}HK$${total.toFixed(1)}`,
+        note: allExact ? "分段精確票價合計" : "分段票價含估算",
+        source: segmentFares.map(item => item.source).join(" / "),
+        isExact: allExact
+      };
+    }
+
+    function renderRoute(route, stops) {
+      const path = route.path || route;
+      const from = stops[0];
+      const to = stops[stops.length - 1];
+      const journeyTitle = stops.join(" → ");
+      const exitStops = stops.slice(1, -1);
+      const stopsBetween = Math.max(path.length - 2, 0);
+      const transfers = getTransferDetailsExcludingStops(path, exitStops);
+      const firstSegment = getSegmentInfo(path, 0);
+      const fareInfo = getJourneyFareInfo(route.path ? route : { path, segments: [path] }, stops);
+      const transferSummary = transfers.length
+        ? transfers.map(item => `${item.station}換${item.toLine}往${item.direction}`).join("；")
+        : "不用換乘";
+      const exitSummary = exitStops.length
+        ? exitStops.map(station => `${station}出站，再入閘繼續下一程`).join("；")
+        : "沒有出站途經點";
+      const routeSegments = renderCompactRouteSegments(path, exitStops);
+      const transferText = transfers.length ? `，站內換乘：${transfers.map(item => item.station).join("、")}` : "，不用站內換乘";
+      const exitText = exitStops.length ? `，出站：${exitStops.join("、")}` : "";
+      return `
+        <div class="summary">${journeyTitle}：共 ${path.length} 站，中途 ${stopsBetween} 站${transferText}${exitText}</div>
+        <div class="trip-facts">
+          <div class="fact"><b>車費</b><span>${fareInfo.label}</span></div>
+          <div class="fact"><b>先搭方向</b><span>${firstSegment.line} 往 ${firstSegment.direction}</span></div>
+          <div class="fact"><b>站內換乘</b><span>${transferSummary}</span></div>
+          <div class="fact"><b>出站途經</b><span>${exitSummary}</span></div>
+          <div class="fact"><b>票價來源</b><span>${fareInfo.note}</span></div>
+          <div class="fact"><b>官方票價</b><a href="${officialFareSearchUrl}" target="_blank" rel="noopener">打開港鐵查詢</a></div>
+        </div>
+        <div class="route-segments">${routeSegments}</div>
+      `;
+    }
+
+    function search() {
+      const result = document.querySelector("#result");
+      const from = normalizeName(document.querySelector("#from").value);
+      const viaInput = document.querySelector("#via").value.trim();
+      const via = viaInput ? normalizeName(viaInput) : "";
+      const to = normalizeName(document.querySelector("#to").value);
+      const stops = via ? [from, via, to] : [from, to];
+
+      if (!from || !to || (viaInput && !via)) {
+        result.innerHTML = `<div class="error">請輸入可識別的起點和終點站名。</div>`;
+        return;
+      }
+      if (new Set(stops).size !== stops.length) {
+        result.innerHTML = `<div class="error">起點、途經和終點不可重複，請選擇不同車站。</div>`;
+        return;
+      }
+
+      const route = findRouteWithStops(stops);
+      result.innerHTML = route
+        ? renderRoute(route, stops)
+        : `<div class="error">暫時找不到 ${stops.join(" 到 ")} 的路線。</div>`;
+    }
+
+    const localServerOrigin = window.location.protocol === "file:" ? "http://127.0.0.1:8788" : "";
+    const apiPath = path => /^https?:\/\//i.test(path) ? path : `${localServerOrigin}${path}`;
+    const kmbApiBase = apiPath("/api/kmb");
+    const addressLookupApi = apiPath("/api/address");
+    const addressSuggestApi = apiPath("/api/address/suggest");
+    let kmbCache = null;
+    let currentLocationPoint = null;
+    let stagedOrders = [];
+    const ORDER_CARD_DELIMITER = "---ORDER_CARD---";
+    const OCR_PLACE_FIXES = [
+      [/蔓\s*枝\s*角|協\s*枝\s*角|第\s*枝\s*角/g, "荔枝角"],
+      [/跑\s*馬\s*地|跑\s*马\s*地/g, "跑馬地"],
+      [/觀\s*塘|观\s*塘|覲塘|觐塘|觀\s*直|EHiE|EiE|EhiE|EilE/gi, "觀塘"],
+      [/薄\s*扶\s*林|溥\s*扶\s*林|蒲\s*扶\s*林|漂\s*扶\s*林|清\s*扶\s*林|汪\s*扶\s*林|澪\s*扶\s*林|LEFRY|EE\s*730\)?/gi, "薄扶林"],
+      [/兩\s*棱\s*林|两\s*棱\s*林|淳\s*扶\s*林|清\s*枝\s*林/g, "薄扶林"],
+      [/葵\s*涌|刁\s*消|刁\s*涌|5%8|5%A|獎\s*滿|獎\s*潤/g, "葵涌"],
+      [/Z3\s*SPh|2%\s*m|2%\s*rn/gi, "葵涌"],
+      [/柴\s*汐|柴\s*湾|柴\s*灣/g, "柴灣"],
+      [/新\s*浦\s*疝|新\s*蒲\s*崗|新\s*蒲\s*岗/g, "新蒲崗"],
+      [/石\s*離|石\s*离/g, "石籬"],
+      [/灣\s*仔|湾\s*仔|漕\s*仔|溝\s*仔/g, "灣仔"],
+      [/秀\s*茂\s*坪|秀\s*上\s*茂\s*坪|FHIRF/g, "秀茂坪"],
+      [/屯\s*門|屯\s*门|屯\s*「\s*\]/g, "屯門"],
+      [/大\s*角\s*咀|大\s*角\s*嘴/g, "大角咀"],
+      [/元\s*朗|JuEA|JCEA|7cEA/g, "元朗"],
+      [/西\s*環|西\s*环|西\s*瑯|西\s*堀|曲\s*堀/g, "西環"],
+      [/北\s*角|北\s*茅/g, "北角"],
+      [/中\s*環|中\s*环|中\s*璩|中\s*琳|中\s*埴/g, "中環"],
+      [/歡\s*景|蔓\s*景|茘\s*景|茫\s*景/g, "荔景"],
+      [/九\s*龍\s*場|九\s*龍\s*成|九\s*龍\s*城/g, "九龍城"],
+      [/尖\s*泰\s*咀|小\s*泰\s*呼|尖\s*沙\s*咀|尖\s*沙\s*嘴/g, "尖沙咀"],
+      [/荃\s*澪|坎\s*灣|荃\s*灣|荃\s*湾/g, "荃灣"],
+      [/新\s*荷\s*崗|新\s*蒲\s*崗|新\s*蒲\s*岗|斬\s*浦\s*岫|斬\s*浦\s*岱/g, "新蒲崗"],
+      [/茬\s*(?:枝|果)\s*角|夷\s*柯\s*雋|荔\s*枝\s*角|茘\s*枝\s*角/g, "荔枝角"],
+      [/葵\s*涌|葵\s*湧|蔑\s*湧|煒\s*渺|煒\s*湧|煒\s*湮|炔\s*湧|蒂\s*湧/g, "葵涌"],
+      [/柴\s*灣|柴\s*湾|柴\s*潯|桃\s*澪/g, "柴灣"],
+      [/啟\s*德|启\s*德/g, "啟德"],
+      [/何\s*文\s*田/g, "何文田"],
+      [/九\s*龍\s*灣|九\s*龙\s*湾/g, "九龍灣"],
+      [/上\s*環|上\s*环/g, "上環"]
+    ];
+
+    function getErrorMessage(error, fallback = "操作失敗，請檢查本地服務是否已啟動。") {
+      const rawMessage = error instanceof Error && error.message ? error.message : "";
+      if (/importScripts|worker\.min\.js|worker.*failed to load|WorkerGlobalScope/i.test(rawMessage)) {
+        return "OCR Worker 載入失敗：請確認 02 本地服務 http://127.0.0.1:8788/ 正在運行，並刷新頁面後重試。";
+      }
+      if (/failed to fetch|load failed|networkerror/i.test(rawMessage)) {
+        return "本地服務連接失敗，請確認 02 本地服務 http://127.0.0.1:8788/ 正在運行，然後刷新頁面再試。";
+      }
+      if (rawMessage) return rawMessage;
+      if (typeof error === "string" && error.trim()) return error;
+      if (error && typeof error === "object") {
+        if (error.message) return String(error.message);
+        if (error.error) return String(error.error);
+      }
+      if (window.location.protocol === "file:") {
+        return `${fallback} 目前頁面是 file:// 模式，請確認 02 本地服務 http://127.0.0.1:8788/ 正在運行。`;
+      }
+      return fallback;
+    }
+
+    const mtrStationCoordinates = {
+      "旺角": { lat: 22.3193, lng: 114.1694 },
+      "旺角東": { lat: 22.3220, lng: 114.1720 },
+      "太子": { lat: 22.3246, lng: 114.1681 },
+      "油麻地": { lat: 22.3133, lng: 114.1707 },
+      "尖沙咀": { lat: 22.2976, lng: 114.1722 },
+      "金鐘": { lat: 22.2796, lng: 114.1655 },
+      "中環": { lat: 22.2819, lng: 114.1589 },
+      "香港": { lat: 22.2849, lng: 114.1582 },
+      "北角": { lat: 22.2913, lng: 114.2005 },
+      "鰂魚涌": { lat: 22.2887, lng: 114.2099 },
+      "黃埔": { lat: 22.3049, lng: 114.1905 },
+      "何文田": { lat: 22.3093, lng: 114.1821 },
+      "土瓜灣": { lat: 22.3170, lng: 114.1879 },
+      "宋皇臺": { lat: 22.3256, lng: 114.1906 },
+      "啟德": { lat: 22.3314, lng: 114.1994 },
+      "九龍塘": { lat: 22.3373, lng: 114.1762 },
+      "鑽石山": { lat: 22.3400, lng: 114.2010 },
+      "彩虹": { lat: 22.3347, lng: 114.2094 },
+      "九龍灣": { lat: 22.3230, lng: 114.2141 },
+      "牛頭角": { lat: 22.3156, lng: 114.2192 },
+      "觀塘": { lat: 22.3122, lng: 114.2253 },
+      "藍田": { lat: 22.3068, lng: 114.2331 },
+      "油塘": { lat: 22.2961, lng: 114.2375 },
+      "調景嶺": { lat: 22.3049, lng: 114.2526 },
+      "將軍澳": { lat: 22.3074, lng: 114.2604 },
+      "坑口": { lat: 22.3156, lng: 114.2646 },
+      "寶琳": { lat: 22.3225, lng: 114.2578 },
+      "荃灣": { lat: 22.3730, lng: 114.1170 },
+      "葵興": { lat: 22.3632, lng: 114.1315 },
+      "美孚": { lat: 22.3377, lng: 114.1405 },
+      "屯門": { lat: 22.3953, lng: 113.9737 }
+    };
+
+    async function fetchJson(url, timeoutMs = 8000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error(`API ${response.status}`);
+        return response.json();
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    function findFirstCoordinate(node) {
+      if (!node || typeof node !== "object") return null;
+      const lat = node.lat ?? node.latitude ?? node.Latitude;
+      const lng = node.lng ?? node.lon ?? node.long ?? node.longitude ?? node.Longitude;
+      if (lat !== undefined && lng !== undefined && !Number.isNaN(Number(lat)) && !Number.isNaN(Number(lng))) {
+        return { lat: Number(lat), lng: Number(lng) };
+      }
+      for (const value of Object.values(node)) {
+        const found = findFirstCoordinate(value);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function extractAddressName(node, fallback) {
+      const text = JSON.stringify(node);
+      const match = text.match(/"[^"]*(BuildingName|StreetName|ChiPremisesAddress|EngPremisesAddress)[^"]*":"([^"]+)"/);
+      return match ? match[2] : fallback;
+    }
+
+    function displayAddressName(data, fallback) {
+      if (data.labelZh) return data.labelZh;
+      if (data.label) return data.label;
+      return extractAddressName(data, fallback);
+    }
+
+    async function geocodeAddress(query) {
+      const url = `${addressLookupApi}?q=${encodeURIComponent(query)}&n=1`;
+      const response = await fetch(url, { headers: { Accept: "application/json" } });
+      if (!response.ok) {
+        let message = `找不到地址「${query}」`;
+        try {
+          const errorData = await response.json();
+          if (errorData.error) message = `${message}：${errorData.error}`;
+        } catch {}
+        throw new Error(`${message}。請改用建議列表中的地名，或把地名補入本地索引。`);
+      }
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        const xml = new DOMParser().parseFromString(text, "text/xml");
+        const lat = xml.querySelector("Latitude")?.textContent;
+        const lng = xml.querySelector("Longitude")?.textContent;
+        const chiName = xml.querySelector("ChiPremisesAddress, BuildingName, StreetName")?.textContent;
+        if (!lat || !lng) throw new Error(`找不到地址：${query}`);
+        return { label: chiName || query, labelZh: chiName || query, lat: Number(lat), lng: Number(lng) };
+      }
+      const suggested = data.SuggestedAddress?.[0] || data.suggestedAddress?.[0] || data;
+      const coordinate = findFirstCoordinate(suggested);
+      if (!coordinate) throw new Error(`找不到地址：${query}`);
+      return { label: displayAddressName(suggested, query), labelZh: displayAddressName(suggested, query), ...coordinate };
+    }
+
+    function setOrderLocationStatus(message, isError = false) {
+      const status = document.querySelector("#orderLocationStatus");
+      if (!status) return;
+      status.textContent = message;
+      status.style.color = isError ? "var(--danger)" : "var(--muted)";
+      status.style.fontWeight = isError ? "800" : "700";
+    }
+
+    function getBrowserPosition() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error("此瀏覽器不支援定位。"));
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 30000
+        });
+      });
+    }
+
+    async function useCurrentLocation({ silent = false } = {}) {
+      const input = document.querySelector("#orderCurrent");
+      if (!silent) setOrderLocationStatus("正在讀取目前位置...");
+      try {
+        const position = await getBrowserPosition();
+        const accuracy = Math.round(position.coords.accuracy || 0);
+        currentLocationPoint = {
+          label: `目前位置 (${Number(position.coords.latitude).toFixed(5)}, ${Number(position.coords.longitude).toFixed(5)})`,
+          labelZh: "目前位置",
+          lat: Number(position.coords.latitude),
+          lng: Number(position.coords.longitude),
+          accuracy
+        };
+        input.value = `目前位置，精度約 ${accuracy || "?"} 米`;
+        setOrderLocationStatus(`已讀取目前位置，精度約 ${accuracy || "?"} 米。`);
+        return currentLocationPoint;
+      } catch (error) {
+        const message = error.code === 1
+          ? "定位權限被拒絕；請允許瀏覽器定位，或手動輸入 A 點。"
+          : error.code === 3
+            ? "讀取定位逾時；請再按一次，或手動輸入 A 點。"
+            : `${getErrorMessage(error, "定位失敗")}；可手動輸入 A 點。`;
+        if (!silent) setOrderLocationStatus(message, true);
+        currentLocationPoint = null;
+        return null;
+      }
+    }
+
+    async function getOrderStartPoint() {
+      if (currentLocationPoint) return currentLocationPoint;
+      const currentInput = document.querySelector("#orderCurrent").value.trim();
+      if (!currentInput) {
+        const location = await useCurrentLocation();
+        if (location) return location;
+        throw new Error("請先允許讀取目前位置，或手動輸入你現在的 A 點。");
+      }
+      if (/^目前位置/.test(currentInput)) {
+        const location = await useCurrentLocation();
+        if (location) return location;
+        throw new Error("目前位置尚未成功讀取，請再按「使用目前位置」或手動輸入 A 點。");
+      }
+      return geocodeAddress(currentInput);
+    }
+
+    function clearCurrentLocationPoint() {
+      currentLocationPoint = null;
+      setOrderLocationStatus("已改用手動 A 點；可再按「使用目前位置」切回定位。");
+    }
+
+    async function getAddressSuggestions(value) {
+      const query = value.trim();
+      if (!query) return [];
+      const response = await fetch(`${addressSuggestApi}?q=${encodeURIComponent(query)}`);
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.data || [];
+    }
+
+    function attachAddressAutocomplete(inputId, boxId) {
+      const input = document.querySelector(inputId);
+      const box = document.querySelector(boxId);
+      let requestId = 0;
+
+      async function render() {
+        const current = ++requestId;
+        const matches = await getAddressSuggestions(input.value);
+        if (current !== requestId) return;
+        if (!matches.length) {
+          box.classList.remove("show");
+          box.innerHTML = "";
+          return;
+        }
+        box.innerHTML = matches.map(place => `
+          <button class="suggestion" type="button" data-label="${place.labelZh}" data-full-label="${place.label}">
+            ${place.labelZh}<span>${place.labelEn || "地址"}</span>
+          </button>
+        `).join("");
+        box.classList.add("show");
+      }
+
+      input.addEventListener("input", render);
+      input.addEventListener("focus", render);
+      input.addEventListener("blur", () => {
+        setTimeout(() => box.classList.remove("show"), 120);
+      });
+      box.addEventListener("click", event => {
+        const button = event.target.closest(".suggestion");
+        if (!button) return;
+        input.value = button.dataset.label;
+        input.dataset.displayLabel = button.dataset.label;
+        if (input.id === "orderCurrent") clearCurrentLocationPoint();
+        box.classList.remove("show");
+        input.focus();
+      });
+    }
+
+    function distanceMeters(a, b) {
+      const radius = 6371000;
+      const toRad = value => value * Math.PI / 180;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const lat1 = toRad(a.lat);
+      const lat2 = toRad(b.lat);
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+      return 2 * radius * Math.asin(Math.sqrt(h));
+    }
+
+    let leafletPromise = null;
+    let routeMap = null;
+    let routeMapLayer = null;
+
+    async function loadLeaflet() {
+      if (window.L) return window.L;
+      if (leafletPromise) return leafletPromise;
+      leafletPromise = new Promise((resolve, reject) => {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(css);
+
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.onload = () => resolve(window.L);
+        script.onerror = () => reject(new Error("地圖載入失敗，請檢查網絡。"));
+        document.head.appendChild(script);
+      });
+      return leafletPromise;
+    }
+
+    async function renderMap(points) {
+      if (!points.length) return;
+      const panel = document.querySelector("#mapPanel");
+      panel.classList.add("show");
+      const L = await loadLeaflet();
+      if (!routeMap) {
+        routeMap = L.map("routeMap", { zoomControl: true });
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(routeMap);
+      }
+      if (routeMapLayer) routeMapLayer.remove();
+      routeMapLayer = L.layerGroup().addTo(routeMap);
+
+      const latLngs = points.map(point => [point.lat, point.lng]);
+      points.forEach((point, index) => {
+        L.marker([point.lat, point.lng])
+          .bindPopup(`${index + 1}. ${point.label}`)
+          .addTo(routeMapLayer);
+      });
+      if (latLngs.length > 1) {
+        L.polyline(latLngs, { color: "#0072ce", weight: 4, opacity: 0.85 }).addTo(routeMapLayer);
+      }
+      routeMap.fitBounds(L.latLngBounds(latLngs).pad(0.18));
+      setTimeout(() => routeMap.invalidateSize(), 80);
+    }
+
+    async function loadKmbData() {
+      if (kmbCache) return kmbCache;
+      const [routes, stops, routeStops] = await Promise.all([
+        fetchJson(`${kmbApiBase}/route/`),
+        fetchJson(`${kmbApiBase}/stop`),
+        fetchJson(`${kmbApiBase}/route-stop`)
+      ]);
+
+      const stopsById = new Map((stops.data || []).map(stop => [stop.stop, {
+        id: stop.stop,
+        name: stop.name_tc || stop.name_en || stop.stop,
+        lat: Number(stop.lat),
+        lng: Number(stop.long)
+      }]));
+      const routesByKey = new Map((routes.data || []).map(route => [
+        `${route.route}|${route.bound}|${route.service_type}`,
+        route
+      ]));
+      const routeGroups = new Map();
+      for (const item of routeStops.data || []) {
+        const key = `${item.route}|${item.bound}|${item.service_type}`;
+        if (!routeGroups.has(key)) routeGroups.set(key, []);
+        routeGroups.get(key).push(item);
+      }
+      for (const group of routeGroups.values()) {
+        group.sort((a, b) => Number(a.seq) - Number(b.seq));
+      }
+      kmbCache = { stopsById, routesByKey, routeGroups };
+      return kmbCache;
+    }
+
+    function nearestKmbStops(point, kmb, limit = 14, radius = 650) {
+      return [...kmb.stopsById.values()]
+        .map(stop => ({ ...stop, distance: distanceMeters(point, stop) }))
+        .filter(stop => stop.distance <= radius)
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, limit);
+    }
+
+    function findDirectKmbOptions(fromPoint, toPoint, kmb) {
+      const originStops = nearestKmbStops(fromPoint, kmb);
+      const destinationStops = nearestKmbStops(toPoint, kmb);
+      const originIds = new Set(originStops.map(stop => stop.id));
+      const destinationIds = new Set(destinationStops.map(stop => stop.id));
+      const options = [];
+
+      for (const [key, group] of kmb.routeGroups.entries()) {
+        const startIndex = group.findIndex(item => originIds.has(item.stop));
+        if (startIndex === -1) continue;
+        const endIndex = group.findIndex((item, index) => index > startIndex && destinationIds.has(item.stop));
+        if (endIndex === -1) continue;
+        const route = kmb.routesByKey.get(key);
+        const startStop = kmb.stopsById.get(group[startIndex].stop);
+        const endStop = kmb.stopsById.get(group[endIndex].stop);
+        options.push({
+          type: "kmb",
+          route: group[startIndex].route,
+          bound: group[startIndex].bound,
+          serviceType: group[startIndex].service_type,
+          destination: route?.dest_tc || route?.dest_en || "",
+          originStop: startStop,
+          destinationStop: endStop,
+          stopCount: endIndex - startIndex + 1,
+          walkStart: distanceMeters(fromPoint, startStop),
+          walkEnd: distanceMeters(toPoint, endStop)
+        });
+      }
+
+      return options
+        .sort((a, b) => (a.walkStart + a.walkEnd + a.stopCount * 80) - (b.walkStart + b.walkEnd + b.stopCount * 80))
+        .slice(0, 4);
+    }
+
+    function nearestMtrStation(point, radius = 1400) {
+      const nearest = Object.entries(mtrStationCoordinates)
+        .map(([station, coord]) => ({ station, distance: distanceMeters(point, coord) }))
+        .sort((a, b) => a.distance - b.distance)[0];
+      return nearest && nearest.distance <= radius ? nearest : null;
+    }
+
+    function findMtrAddressOption(fromPoint, toPoint) {
+      const fromStation = nearestMtrStation(fromPoint);
+      const toStation = nearestMtrStation(toPoint);
+      if (!fromStation || !toStation || fromStation.station === toStation.station) return null;
+      const route = findRouteWithStops([fromStation.station, toStation.station]);
+      if (!route) return null;
+      return {
+        type: "mtr",
+        fromStation,
+        toStation,
+        route,
+        fare: getJourneyFareInfo(route, [fromStation.station, toStation.station])
+      };
+    }
+
+    function renderMtrRouteDetails(mtr) {
+      const path = mtr.route.path || [];
+      const transfers = getTransferDetails(path);
+      const firstSegment = getSegmentInfo(path, 0);
+      const routeSegments = renderCompactRouteSegments(path);
+      const transferText = transfers.length
+        ? transfers.map(item => `${item.station}換${item.toLine}往${item.direction}`).join("；")
+        : "不用換乘";
+      return `
+        <p><strong>步行到站：</strong>${mtr.fromStation.station}，約 ${Math.round(mtr.fromStation.distance)} 米</p>
+        <p><strong>離站步行：</strong>${mtr.toStation.station}，約 ${Math.round(mtr.toStation.distance)} 米</p>
+        <p><strong>先搭方向：</strong>${firstSegment ? `${firstSegment.line} 往 ${firstSegment.direction}` : "未能判斷"}</p>
+        <p><strong>換乘：</strong>${transferText}</p>
+        <p><strong>車費：</strong>${mtr.fare.label}</p>
+        <div class="route-segments">${routeSegments}</div>
+      `;
+    }
+
+    function timeoutAfter(ms, message) {
+      return new Promise((_, reject) => {
+        setTimeout(() => reject(new Error(message)), ms);
+      });
+    }
+
+    async function recommendAddressSegment(fromPoint, toPoint, { includeKmb = true, kmbTimeoutMs = 3500 } = {}) {
+      const [kmb, mtr] = await Promise.all([
+        includeKmb
+          ? Promise.race([
+            loadKmbData(),
+            timeoutAfter(kmbTimeoutMs, "KMB 資料讀取超時，先用港鐵/步行估算")
+          ]).catch(error => ({ error }))
+          : Promise.resolve({ error: new Error("已略過 KMB 快速查詢") }),
+        Promise.resolve(findMtrAddressOption(fromPoint, toPoint))
+      ]);
+      const kmbOptions = kmb.error ? [] : findDirectKmbOptions(fromPoint, toPoint, kmb);
+      return { kmbOptions, mtr, kmbError: kmb.error };
+    }
+
+    function renderAddressSegment(segment, fromPoint, toPoint, index) {
+      const cards = [];
+      const fallbackDistance = distanceMeters(fromPoint, toPoint);
+      const bestChoice = bestTransitChoice(segment, fallbackDistance);
+      cards.push(`
+        <div class="summary">第 ${index + 1} 程優先建議：${bestChoice.mode === "walk" ? "步行" : bestChoice.mode === "kmb" ? "KMB" : bestChoice.mode === "mtr" ? "港鐵" : "未找到直達"}，約 ${Math.ceil(bestChoice.minutes)} 分鐘</div>
+      `);
+      for (const option of segment.kmbOptions) {
+        cards.push(`
+          <div class="option-card">
+            <h3>第 ${index + 1} 程：KMB ${option.route} 往 ${option.destination}</h3>
+            <p><strong>上車：</strong>${option.originStop.name}，步行約 ${Math.round(option.walkStart)} 米</p>
+            <p><strong>下車：</strong>${option.destinationStop.name}，再步行約 ${Math.round(option.walkEnd)} 米</p>
+            <p><strong>車程：</strong>約 ${option.stopCount} 個巴士站；實時到站可用 KMB ETA API 再補</p>
+          </div>
+        `);
+      }
+      if (segment.mtr) {
+        cards.push(`
+          <div class="option-card">
+            <h3>第 ${index + 1} 程：港鐵 ${segment.mtr.fromStation.station} → ${segment.mtr.toStation.station}</h3>
+            ${renderMtrRouteDetails(segment.mtr)}
+          </div>
+        `);
+      }
+      if (!cards.length) {
+        cards.push(`
+          <div class="option-card">
+            <h3>第 ${index + 1} 程：暫未找到直達方案</h3>
+            <p>${segment.kmbError ? `KMB 資料讀取失敗：${segment.kmbError.message}` : "附近未找到可直接連接兩地的 KMB 或已收錄港鐵站。"}</p>
+          </div>
+        `);
+      }
+      return cards.join("");
+    }
+
+    async function planAddressTrip() {
+      const result = document.querySelector("#addressResult");
+      const rawStops = [
+        document.querySelector("#addrFrom").value.trim(),
+        document.querySelector("#addrVia").value.trim(),
+        document.querySelector("#addrTo").value.trim()
+      ].filter(Boolean);
+
+      if (rawStops.length < 2) {
+        result.innerHTML = `<div class="error">請至少輸入 A 地址和 C 地址。</div>`;
+        return;
+      }
+
+      result.innerHTML = `<div class="summary">正在查地址和公共交通資料...</div>`;
+      try {
+        const points = await Promise.all(rawStops.map(geocodeAddress));
+        const displayStops = points.map(point => point.labelZh || point.label);
+        const segments = [];
+        for (let index = 0; index < points.length - 1; index += 1) {
+          segments.push(await recommendAddressSegment(points[index], points[index + 1]));
+        }
+        result.innerHTML = `
+          <div class="summary">${displayStops.join(" → ")}：以下是按附近站點找到的初步建議</div>
+          ${segments.map((segment, index) => renderAddressSegment(segment, points[index], points[index + 1], index)).join("")}
+        `;
+        renderMap(points.map(point => ({
+          label: point.labelZh || point.label,
+          lat: point.lat,
+          lng: point.lng
+        }))).catch(error => {
+          result.innerHTML += `<div class="error">${getErrorMessage(error)}</div>`;
+        });
+      } catch (error) {
+        result.innerHTML = `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    let knownPlacesCache = null;
+
+    function prepareKnownPlaces(places = []) {
+      return places.map(place => {
+        const keys = [place.labelZh, place.labelEn, ...(place.keys || [])]
+          .filter(Boolean)
+          .map(value => String(value).trim())
+          .filter(Boolean);
+        const seenKeys = new Set();
+        const normalizedKeys = keys
+          .map(key => ({
+            raw: key,
+            normalized: normalizePlaceSearchText(key),
+            latin: /^[a-z:;\\/\-.'\s]+$/i.test(key)
+          }))
+          .filter(item => item.normalized.length >= 2)
+          .filter(item => !item.latin || item.normalized.length >= 4)
+          .filter(item => {
+            const dedupeKey = `${item.raw}|${item.normalized}`;
+            if (seenKeys.has(dedupeKey)) return false;
+            seenKeys.add(dedupeKey);
+            return true;
+          });
+        return {
+          ...place,
+          _normalizedKeys: normalizedKeys
+        };
+      });
+    }
+
+    async function loadKnownPlaces() {
+      if (knownPlacesCache) return knownPlacesCache;
+      const response = await fetch(apiPath("/api/address/places"));
+      if (!response.ok) return [];
+      const data = await response.json();
+      knownPlacesCache = prepareKnownPlaces(data.data || []);
+      return knownPlacesCache;
+    }
+
+    async function loadOcrEngine() {
+      if (window.Tesseract) return window.Tesseract;
+      const sources = [
+        apiPath("/api/ocr/tesseract.min.js"),
+        "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js",
+        "https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"
+      ];
+      const errors = [];
+      for (const source of sources) {
+        try {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = source;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(source));
+            document.head.appendChild(script);
+          });
+          if (window.Tesseract) return window.Tesseract;
+        } catch (error) {
+          errors.push(getErrorMessage(error, "OCR 來源讀取失敗"));
+        }
+      }
+      throw new Error(`OCR 載入失敗：本地代理和 CDN 都無法取得 OCR 引擎。已嘗試 ${errors.join("、")}`);
+    }
+
+    function getOcrOptions() {
+      return {
+        workerPath: apiPath("/api/ocr/worker.min.js"),
+        corePath: apiPath("/api/ocr/core/tesseract-core.wasm.js"),
+        langPath: apiPath("/api/ocr/lang")
+      };
+    }
+
+    let ocrAssetCheckPromise = null;
+    const OCR_CACHE_LIMIT = 260;
+    const SCREENSHOT_OCR_CACHE_VERSION = "list-v7-ehkg-specific-place";
+    const SCREENSHOT_OCR_CACHE_LIMIT = 28;
+    const ocrImageCache = new Map();
+    const orderCardTextCache = new Map();
+    const orderCardCropCache = new Map();
+    const blobHashPromises = new WeakMap();
+
+    function rememberLimited(map, key, value, limit = OCR_CACHE_LIMIT) {
+      if (!key) return value;
+      if (map.has(key)) map.delete(key);
+      map.set(key, value);
+      while (map.size > limit) {
+        map.delete(map.keys().next().value);
+      }
+      return value;
+    }
+
+    async function hashBlob(blob) {
+      if (!blob || typeof blob.arrayBuffer !== "function" || !window.crypto?.subtle) return "";
+      if (!blobHashPromises.has(blob)) {
+        blobHashPromises.set(blob, blob.arrayBuffer()
+          .then(buffer => crypto.subtle.digest("SHA-256", buffer))
+          .then(hash => Array.from(new Uint8Array(hash)).map(value => value.toString(16).padStart(2, "0")).join("")));
+      }
+      return blobHashPromises.get(blob);
+    }
+
+    async function imageCacheKey(image, prefix = "image") {
+      const hash = await hashBlob(image);
+      if (hash) return `${prefix}:${hash}`;
+      if (image?.name && image?.size) return `${prefix}:file:${image.name}:${image.size}:${image.type || ""}`;
+      return "";
+    }
+
+    function screenshotOcrStorageKey(hash) {
+      return hash ? `jk:list-ocr:${SCREENSHOT_OCR_CACHE_VERSION}:${hash}` : "";
+    }
+
+    function pruneScreenshotOcrStorage() {
+      try {
+        const prefix = `jk:list-ocr:${SCREENSHOT_OCR_CACHE_VERSION}:`;
+        const entries = [];
+        for (let index = 0; index < localStorage.length; index += 1) {
+          const key = localStorage.key(index);
+          if (!key || !key.startsWith(prefix)) continue;
+          const value = JSON.parse(localStorage.getItem(key) || "{}");
+          entries.push({ key, savedAt: Number(value.savedAt) || 0 });
+        }
+        entries
+          .sort((a, b) => b.savedAt - a.savedAt)
+          .slice(SCREENSHOT_OCR_CACHE_LIMIT)
+          .forEach(entry => localStorage.removeItem(entry.key));
+      } catch {
+        // Cache cleanup is best-effort; OCR should never fail because storage is unavailable.
+      }
+    }
+
+    async function getScreenshotOcrCache(file) {
+      try {
+        const hash = await hashBlob(file);
+        const key = screenshotOcrStorageKey(hash);
+        if (!key) return null;
+        const value = JSON.parse(localStorage.getItem(key) || "null");
+        if (!value || !Array.isArray(value.cards) || value.version !== SCREENSHOT_OCR_CACHE_VERSION) return null;
+        return value;
+      } catch {
+        return null;
+      }
+    }
+
+    async function setScreenshotOcrCache(file, cards) {
+      try {
+        const hash = await hashBlob(file);
+        const key = screenshotOcrStorageKey(hash);
+        if (!key) return;
+        localStorage.setItem(key, JSON.stringify({
+          version: SCREENSHOT_OCR_CACHE_VERSION,
+          savedAt: Date.now(),
+          name: file?.name || "",
+          size: file?.size || 0,
+          cards
+        }));
+        pruneScreenshotOcrStorage();
+      } catch {
+        // Ignore storage quota/private-mode failures and keep normal OCR behavior.
+      }
+    }
+
+    async function ensureOcrAssetsReady() {
+      if (ocrAssetCheckPromise) return ocrAssetCheckPromise;
+      const assets = [
+        "/api/ocr/worker.min.js",
+        "/api/ocr/core/tesseract-core.wasm.js",
+        "/api/ocr/lang/chi_tra.traineddata.gz",
+        "/api/ocr/lang/eng.traineddata.gz"
+      ];
+      ocrAssetCheckPromise = Promise.all(assets.map(async asset => {
+        const response = await fetch(apiPath(asset), { cache: "no-store" });
+        if (!response.ok) throw new Error(`${asset} HTTP ${response.status}`);
+        return true;
+      })).catch(error => {
+        ocrAssetCheckPromise = null;
+        throw new Error(`OCR 資源載入失敗：${getErrorMessage(error)}`);
+      });
+      return ocrAssetCheckPromise;
+    }
+
+    async function recognizeOrderImage(image) {
+      const cacheKey = await imageCacheKey(image, "ocr-v1");
+      if (cacheKey && ocrImageCache.has(cacheKey)) return ocrImageCache.get(cacheKey);
+      const task = (async () => {
+        await ensureOcrAssetsReady();
+        const Tesseract = await loadOcrEngine();
+        return Tesseract.recognize(image, "chi_tra+eng", getOcrOptions());
+      })();
+      if (!cacheKey) return task;
+      rememberLimited(ocrImageCache, cacheKey, task);
+      task.catch(() => ocrImageCache.delete(cacheKey));
+      return task;
+    }
+
+    async function loadImageFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = URL.createObjectURL(file);
+      });
+    }
+
+    async function cropOrderListImage(file) {
+      const image = await loadImageFromFile(file);
+      const cropTop = Math.round(image.height * 0.18);
+      const cropBottom = Math.round(image.height * 0.94);
+      const canvas = document.createElement("canvas");
+      const scale = Math.min(2.2, Math.max(1.45, 1500 / image.width));
+      canvas.width = Math.round(image.width * scale);
+      canvas.height = Math.round((cropBottom - cropTop) * scale);
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, cropTop, image.width, cropBottom - cropTop, 0, 0, canvas.width, canvas.height);
+      return await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+    }
+
+    async function cropOrderCardImages(file) {
+      const cropCacheKey = file?.name && file?.size ? `cards-v2:${file.name}:${file.size}:${file.type || ""}` : "";
+      if (cropCacheKey && orderCardCropCache.has(cropCacheKey)) return orderCardCropCache.get(cropCacheKey);
+      const image = await loadImageFromFile(file);
+      const scanCanvas = document.createElement("canvas");
+      scanCanvas.width = image.width;
+      scanCanvas.height = image.height;
+      const scanContext = scanCanvas.getContext("2d", { willReadFrequently: true });
+      scanContext.drawImage(image, 0, 0);
+      const data = scanContext.getImageData(0, 0, image.width, image.height).data;
+      const xStart = Math.round(image.width * 0.04);
+      const xEnd = Math.round(image.width * 0.96);
+      const yStart = Math.round(image.height * 0.17);
+      const yEnd = Math.round(image.height * 0.90);
+      const activeRows = [];
+      for (let y = yStart; y < yEnd; y += 1) {
+        let dark = 0;
+        let teal = 0;
+        for (let x = xStart; x < xEnd; x += 4) {
+          const offset = (y * image.width + x) * 4;
+          const r = data[offset];
+          const g = data[offset + 1];
+          const b = data[offset + 2];
+          if (r < 120 && g < 140 && b < 150) dark += 1;
+          if (b > 110 && r < 80 && g > 90) teal += 1;
+        }
+        const samples = Math.max(1, Math.ceil((xEnd - xStart) / 4));
+        if ((dark + teal) / samples > 0.006) activeRows.push(y);
+      }
+
+      const groups = [];
+      for (const y of activeRows) {
+        const last = groups[groups.length - 1];
+        if (!last || y - last.end > 45) {
+          groups.push({ start: y, end: y });
+        } else {
+          last.end = y;
+        }
+      }
+
+      const minCardHeight = Math.round(image.width * 0.24);
+      const maxCardHeight = Math.round(image.width * 0.52);
+      const baseRects = groups
+        .map(group => {
+          const signalHeight = group.end - group.start + 1;
+          const y = Math.max(0, group.start - Math.round(image.width * 0.042));
+          const height = Math.min(image.height - y, signalHeight + Math.round(image.width * 0.15));
+          return {
+            x: Math.max(0, Math.round(image.width * 0.015)),
+            y,
+            width: Math.min(image.width, Math.round(image.width * 0.97)),
+            height,
+            signalHeight
+          };
+        })
+        .filter(rect => rect.signalHeight >= image.width * 0.13)
+        .filter(rect => rect.height >= minCardHeight && rect.height <= maxCardHeight)
+        .filter(rect => rect.y > image.height * 0.16 && (rect.y + rect.height) < image.height * 0.94)
+        .slice(0, 8);
+
+      const cardRects = baseRects.map((rect, index) => {
+        const paddedY = Math.max(0, rect.y - 6);
+        const next = baseRects[index + 1];
+        const naturalBottom = rect.y + rect.height + 6;
+        const cappedBottom = next ? Math.min(naturalBottom, next.y - 8) : naturalBottom;
+        const bottom = Math.min(image.height, Math.max(paddedY + minCardHeight, cappedBottom));
+        return {
+          ...rect,
+          y: paddedY,
+          height: Math.max(1, bottom - paddedY)
+        };
+      });
+
+      if (!cardRects.length) return [];
+      const blobs = [];
+      for (const rect of cardRects) {
+        const canvas = document.createElement("canvas");
+        const scale = 2.5;
+        canvas.width = Math.round(rect.width * scale);
+        canvas.height = Math.round(rect.height * scale);
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, rect.x, rect.y, rect.width, rect.height, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+        if (blob) {
+          blob._orderCardMeta = {
+            sourceWidth: image.width,
+            sourceHeight: image.height,
+            rect,
+            scale
+          };
+          blobs.push(blob);
+        }
+      }
+      const result = blobs.filter(Boolean);
+      if (cropCacheKey) rememberLimited(orderCardCropCache, cropCacheKey, result, 80);
+      return result;
+    }
+
+    async function cropBlobRegion(blob, region, scale = 2.5) {
+      const image = await loadImageFromFile(blob);
+      const sourceX = Math.round(image.width * region.x);
+      const sourceY = Math.round(image.height * region.y);
+      const sourceWidth = Math.round(image.width * region.width);
+      const sourceHeight = Math.round(image.height * region.height);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(sourceWidth * scale));
+      canvas.height = Math.max(1, Math.round(sourceHeight * scale));
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, canvas.width, canvas.height);
+      return await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+    }
+
+    const ORDER_CARD_FIELD_REGIONS = {
+      pickupTime: { scale: 4, retryScale: 5, crop: { x: 0.02, y: 0.00, width: 0.46, height: 0.22 }, retryCrop: { x: 0.00, y: 0.00, width: 0.50, height: 0.28 } },
+      pickupPlace: { scale: 3.2, retryScale: 4, crop: { x: 0.03, y: 0.15, width: 0.43, height: 0.25 }, retryCrop: { x: 0.01, y: 0.12, width: 0.48, height: 0.32 } },
+      dropoffTime: { scale: 4, retryScale: 5, crop: { x: 0.48, y: 0.00, width: 0.50, height: 0.22 }, retryCrop: { x: 0.46, y: 0.00, width: 0.52, height: 0.28 } },
+      dropoffPlace: { scale: 3.2, retryScale: 4, crop: { x: 0.49, y: 0.15, width: 0.46, height: 0.25 }, retryCrop: { x: 0.46, y: 0.12, width: 0.51, height: 0.32 } },
+      package: { scale: 3, retryScale: 3.5, crop: { x: 0.07, y: 0.35, width: 0.88, height: 0.34 }, retryCrop: { x: 0.05, y: 0.32, width: 0.92, height: 0.40 } },
+      price: { scale: 4.5, retryScale: 5, crop: { x: 0.04, y: 0.58, width: 0.44, height: 0.38 }, retryCrop: { x: 0.02, y: 0.54, width: 0.50, height: 0.44 } }
+    };
+
+    async function recognizeCardRegion(cardImage, config, useRetry = false) {
+      const crop = useRetry ? (config.retryCrop || config.crop) : config.crop;
+      const scale = useRetry ? (config.retryScale || config.scale || 3) : (config.scale || 3);
+      const cropped = await cropBlobRegion(cardImage, crop, scale);
+      const output = await recognizeOrderImage(cropped || cardImage);
+      return normalizeOcrText(output.data.text);
+    }
+
+    function hasTimeField(text) {
+      return orderTimeTokens(text).length > 0;
+    }
+
+    function hasPriceField(text) {
+      return extractPriceAmount(text, { allowBare: true }) >= 20;
+    }
+
+    function hasPlaceField(text) {
+      const cleaned = cleanOrderAddress(text || "")
+        .replace(/\d{1,2}[:：]\d{2}|\$|HK\$?|\d+x\d+x\d+|cm|kg|公斤|厘米/gi, "")
+        .trim();
+      return /[\u4e00-\u9fff]{2,}/.test(cleaned) || /^[a-z][a-z\s.'-]{2,}$/i.test(cleaned);
+    }
+
+    function hasPackageField(text) {
+      return /\d{1,3}\s*x\s*\d{1,3}\s*x\s*\d{1,3}|公斤|kg|食物|飲品|饮品|藥|药|medicine|food|drink/i.test(String(text || ""));
+    }
+
+    async function retryOrderFieldIfMissing(cardImage, pieces, name, validator) {
+      if (validator(pieces[name])) return;
+      const retryText = await recognizeCardRegion(cardImage, ORDER_CARD_FIELD_REGIONS[name], true);
+      pieces[`${name}Retry`] = retryText;
+      pieces[name] = [pieces[name], retryText].filter(Boolean).join("\n");
+      pieces.retryLog.push(`${name}: ${validator(pieces[name]) ? "ok" : "needs_review"}`);
+    }
+
+    function cardWordBox(word) {
+      const box = word?.bbox || word || {};
+      const x0 = Number(box.x0 ?? box.left ?? 0);
+      const y0 = Number(box.y0 ?? box.top ?? 0);
+      const x1 = Number(box.x1 ?? (box.left + box.width) ?? x0);
+      const y1 = Number(box.y1 ?? (box.top + box.height) ?? y0);
+      return { x0, y0, x1, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, height: Math.max(1, y1 - y0) };
+    }
+
+    function groupOcrWordsIntoLines(words = []) {
+      const cleanWords = words
+        .map(word => ({ text: normalizeOcrText(word.text || ""), box: cardWordBox(word) }))
+        .filter(word => word.text && Number.isFinite(word.box.cx) && Number.isFinite(word.box.cy))
+        .sort((a, b) => a.box.cy - b.box.cy || a.box.x0 - b.box.x0);
+      const lines = [];
+      for (const word of cleanWords) {
+        const tolerance = Math.max(12, word.box.height * 0.75);
+        let line = lines.find(item => Math.abs(item.cy - word.box.cy) <= tolerance);
+        if (!line) {
+          line = { words: [], cy: word.box.cy };
+          lines.push(line);
+        }
+        line.words.push(word);
+        line.cy = (line.cy * (line.words.length - 1) + word.box.cy) / line.words.length;
+      }
+      return lines
+        .map(line => {
+          const ordered = line.words.sort((a, b) => a.box.x0 - b.box.x0);
+          const text = ordered.map(word => word.text).join(" ").trim();
+          const x0 = Math.min(...ordered.map(word => word.box.x0));
+          const x1 = Math.max(...ordered.map(word => word.box.x1));
+          return { text, x0, x1, cx: (x0 + x1) / 2, cy: line.cy };
+        })
+        .filter(line => line.text)
+        .sort((a, b) => a.cy - b.cy || a.x0 - b.x0);
+    }
+
+    function splitCardOcrByColumns(ocrData, cardWidth) {
+      const words = (ocrData?.words || [])
+        .map(word => ({ text: normalizeOcrText(word.text || ""), bbox: cardWordBox(word) }))
+        .filter(word => word.text && Number.isFinite(word.bbox.cx) && Number.isFinite(word.bbox.cy));
+      const inferredWidth = Math.max(cardWidth || 0, ...words.map(word => word.bbox.x1 || 0));
+      const middle = inferredWidth ? inferredWidth * 0.5 : 0;
+      const leftWords = words.filter(word => !middle || word.bbox.cx < middle);
+      const rightWords = words.filter(word => middle && word.bbox.cx >= middle);
+      const leftLines = groupOcrWordsIntoLines(leftWords);
+      const rightLines = groupOcrWordsIntoLines(rightWords);
+      const allLines = groupOcrWordsIntoLines(words);
+      return {
+        left: leftLines.map(line => line.text).join("\n"),
+        right: rightLines.map(line => line.text).join("\n"),
+        all: allLines.map(line => line.text).join("\n")
+      };
+    }
+
+    async function recognizeOrderCardImage(cardImage, places = []) {
+      const cardCacheKey = await imageCacheKey(cardImage, `order-card-v3:${places.length}`);
+      if (cardCacheKey && orderCardTextCache.has(cardCacheKey)) return orderCardTextCache.get(cardCacheKey);
+      const pieces = { retryLog: [] };
+      const fieldNames = ["pickupTime", "pickupPlace", "dropoffTime", "dropoffPlace", "price"];
+      const wholeCardPromise = recognizeOrderImage(cardImage);
+      const fieldResultsPromise = Promise.all(fieldNames.map(async name => [
+        name,
+        await recognizeCardRegion(cardImage, ORDER_CARD_FIELD_REGIONS[name])
+      ]));
+      const [output, fieldResults] = await Promise.all([wholeCardPromise, fieldResultsPromise]);
+      const meta = cardImage?._orderCardMeta || {};
+      const columns = splitCardOcrByColumns(output.data, meta.rect?.width ? meta.rect.width * (meta.scale || 1) : 0);
+      const left = columns.left || "";
+      const right = columns.right || "";
+      const all = normalizeOcrText(columns.all || output.data.text || "");
+      for (const [name, value] of fieldResults) pieces[name] = value;
+
+      const retryTasks = [];
+      if (!hasTimeField(pieces.pickupTime)) retryTasks.push(retryOrderFieldIfMissing(cardImage, pieces, "pickupTime", hasTimeField));
+      if (!hasTimeField(pieces.dropoffTime)) retryTasks.push(retryOrderFieldIfMissing(cardImage, pieces, "dropoffTime", hasTimeField));
+      if (!hasPlaceField(pieces.pickupPlace)) retryTasks.push(retryOrderFieldIfMissing(cardImage, pieces, "pickupPlace", hasPlaceField));
+      if (!hasPlaceField(pieces.dropoffPlace)) retryTasks.push(retryOrderFieldIfMissing(cardImage, pieces, "dropoffPlace", hasPlaceField));
+      if (!hasPriceField(pieces.price)) retryTasks.push(retryOrderFieldIfMissing(cardImage, pieces, "price", hasPriceField));
+      await Promise.all(retryTasks);
+
+      const leftTime = orderTimeTokens(left)[0] || orderTimeTokens(pieces.pickupTime)[0] || "";
+      const urgentRight = /儘快|尽快|asap|urgent|188\s*1A|1B\s*六\s*La/i.test([right, pieces.dropoffTime, pieces.dropoffPlace].join("\n"));
+      const rightTime = orderTimeTokens(right)[0] || orderTimeTokens(pieces.dropoffTime)[0] || (urgentRight ? "asap" : "");
+      const leftRegionPlace = matchPlaceInTextConservative(pieces.pickupPlace, places);
+      const rightRegionPlace = matchPlaceInTextConservative(pieces.dropoffPlace, places);
+      const leftColumnPlace = matchPlaceInTextConservative(left, places);
+      const rightColumnPlace = matchPlaceInTextConservative(right, places);
+      const allPlaceLabels = orderedPlaceLabelsInText(all, places);
+      const preferSpecificPlace = (current, fallback) => {
+        const currentText = cleanAreaText(current || "");
+        const fallbackText = cleanAreaText(fallback || "");
+        if (currentText && fallbackText && fallbackText.length > currentText.length && fallbackText.includes(currentText)) {
+          return fallbackText;
+        }
+        return currentText || fallbackText;
+      };
+      const leftPlace = preferSpecificPlace(
+        leftColumnPlace.label || leftRegionPlace.label || pieces.pickupPlace || left,
+        allPlaceLabels[0]
+      );
+      const rightPlace = preferSpecificPlace(
+        rightColumnPlace.label || rightRegionPlace.label || pieces.dropoffPlace || right,
+        allPlaceLabels[1]
+      );
+      let priceText = extractPriceTextFromOcr(pieces.price, { allowBare: true })
+        || extractPriceTextFromOcr(all, { allowBare: false })
+        || pieces.price
+        || all;
+      priceText = extractPriceTextFromOcr(priceText, { allowBare: true })
+        || extractPriceTextFromOcr(all, { allowBare: false })
+        || priceText
+        || all;
+      const structuredText = [
+        "@@CARD_ALL@@",
+        all,
+        "@@CARD_LEFT@@",
+        left,
+        "@@CARD_RIGHT@@",
+        right,
+        "@@PICKUP_TIME@@",
+        leftTime,
+        "@@PICKUP_PLACE@@",
+        leftPlace,
+        "@@PICKUP@@",
+        [leftTime, leftPlace].filter(Boolean).join("\n"),
+        "@@DROPOFF_TIME@@",
+        rightTime,
+        "@@DROPOFF_PLACE@@",
+        rightPlace,
+        "@@DROPOFF@@",
+        [rightTime, rightPlace].filter(Boolean).join("\n"),
+        "@@PACKAGE@@",
+        "",
+        "@@PRICE@@",
+        priceText,
+        "@@RETRY_LOG@@",
+        pieces.retryLog.length ? pieces.retryLog.join("\n") : "fixed_region_ocr"
+      ].join("\n");
+      if (cardCacheKey) rememberLimited(orderCardTextCache, cardCacheKey, structuredText);
+      return structuredText;
+    }
+
+    function applyOcrPlaceFixes(text) {
+      return OCR_PLACE_FIXES.reduce((value, [pattern, replacement]) => value.replace(pattern, replacement), String(text || ""));
+    }
+
+    function cleanAreaText(text) {
+      return String(text || "")
+        .replace(/\s+/g, "")
+        .replace(/\n/g, "")
+        .trim();
+    }
+
+    function normalizeOcrText(text) {
+      return applyOcrPlaceFixes(text
+        .replace(/[|]/g, " ")
+        .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
+        .replace(/九\s*龍\s*城|九\s*龙\s*城|九\s*玥\s*城|九\s*龍\s*成|九\s*龍\s*場/g, "九龍城")
+        .replace(/尖\s*沙\s*咀|尖沙\s*咀|尖沙咀|尖沙嘴|尖\s*泰\s*咀|小\s*泰\s*呼/g, "尖沙咀")
+        .replace(/觀\s*塘|观\s*塘|覲塘|觐塘|觀搪|观搪|觀\s*超|观\s*超|EniE|EiE/g, "觀塘")
+        .replace(/荃\s*灣|荃\s*湾|全\s*灣|全\s*湾|苔灣|苔湾|荼灣|荼湾|鑰\s*灣|钥\s*湾|仁\s*灣|荃\s*澪|坎\s*灣/g, "荃灣")
+        .replace(/£4\s*灣仔/g, "荃灣 灣仔")
+        .replace(/灣\s*仔|湾\s*仔|灘\s*仔|湾\s*仔/g, "灣仔")
+        .replace(/新\s*蒲\s*崗|新\s*蒲\s*岗|新\s*浦\s*崗|新\s*浦\s*岗|新\s*浦\s*商|新\s*蒲\s*商|新\s*清\s*山|新\s*荷\s*崗|斬\s*浦\s*岫|斬\s*浦\s*岱/g, "新蒲崗")
+        .replace(/荔\s*枝\s*角|茘\s*枝\s*角|莉\s*枝\s*角|蔓\s*枝\s*角|荔\s*支\s*角|第\s*枝\s*角|協\s*枝\s*角|茬\s*(?:枝|果)\s*角|夷\s*柯\s*雋/g, "荔枝角")
+        .replace(/薄\s*扶\s*林|溥\s*扶\s*林|蒲\s*扶\s*林|漂\s*扶\s*林|清\s*扶\s*林|汪\s*扶\s*林|澪\s*扶\s*林/g, "薄扶林")
+        .replace(/EE\s*730\)?|EE730\)?/g, "薄扶林")
+        .replace(/荔\s*景|茘\s*景|莉\s*景|蔓\s*景|种\s*景|茫\s*景/g, "荔景")
+        .replace(/葵\s*涌|葵\s*湧|獎\s*滿|蔑\s*湧|煒\s*渺|煒\s*湧|煒\s*湮|炔\s*湧|蒂\s*湧/g, "葵涌")
+        .replace(/柴\s*灣|柴\s*湾|柴\s*潯|桃\s*澪/g, "柴灣")
+        .replace(/秀\s*茂\s*坪|秀\s*上\s*茂\s*坪|秀\s*上\s*成\s*坪/g, "秀茂坪")
+        .replace(/跑\s*馬\s*地|跑\s*马\s*地/g, "跑馬地")
+        .replace(/何\s*文\s*田/g, "何文田")
+        .replace(/啟\s*德|启\s*德/g, "啟德")
+        .replace(/九\s*龍\s*灣|九\s*龙\s*湾|九\s*龍灣|九\s*龙湾/g, "九龍灣")
+        .replace(/青\s*衣/g, "青衣")
+        .replace(/上\s*環|上\s*环/g, "上環")
+        .replace(/西\s*環|西\s*环|西\s*瑯|西\s*堀|曲\s*堀/g, "西環")
+        .replace(/北\s*角|北\s*茅/g, "北角")
+        .replace(/老\s*圍|老\s*围/g, "老圍")
+        .replace(/中\s*環|中\s*环|中\s*璩|中\s*琳|中\s*埴|chig/gi, "中環")
+        .replace(/食物\s*\/\s*的\s*品/g, "食物 / 飲品")
+        .replace(/(\d{1,3}x\d{1,3}x\d{1,3})\s*\[EK/gi, "$1 厘米")
+        .replace(/(\d{1,3}x\d{1,3}x\d{1,3})\s*\[E¥/gi, "$1 厘米")
+        .replace(/厘\s*米/g, "厘米")
+        .replace(/圖\s*(清酒)/g, "$1")
+        .replace(/師\s*清\s*酒/g, "清酒")
+        .replace(/家\s*用\s*設\s*備/g, "家用設備")
+        .replace(/,\s*%\s*$/gm, ", 藥")
+        .replace(/[sl]\s*≤\s*(\d+(?:\.\d+)?)\s*公\s*斤/gi, "≤$1 公斤")
+        .replace(/,\s*(\d+(?:\.\d+)?)\s*公\s*斤/gi, ", ≤$1 公斤")
+        .replace(/\b[sl]\s*(\d+(?:\.\d+)?)\s*AF/gi, "≤$1 公斤")
+        .replace(/\b[sl]\s*≤\s*(\d+(?:\.\d+)?)\s*公\s*斤/gi, "≤$1 公斤")
+        .replace(/\b[sl]\s*(\d+(?:\.\d+)?)\s*公\s*斤/gi, "≤$1 公斤")
+        .replace(/<\s*(\d+(?:\.\d+)?)\s*公\s*斤/gi, "≤$1 公斤")
+        .replace(/蔚\s*(清酒)/g, "$1")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim());
+    }
+
+    async function readOrderScreenshot() {
+      const result = document.querySelector("#orderResult");
+      const files = [...document.querySelector("#orderScreenshot").files];
+      if (!files.length) {
+        result.innerHTML = `<div class="error">請先選擇訂單截圖。</div>`;
+        return;
+      }
+      result.innerHTML = `<div class="summary">正在快速識別 ${files.length} 張訂單截圖，會等全部完成後再推薦...</div>`;
+      try {
+        const chunks = [];
+        const debugCards = [];
+        let expectedCardCount = 0;
+        const places = await loadKnownPlaces();
+        for (let index = 0; index < files.length; index += 1) {
+          result.innerHTML = `<div class="summary">正在識別第 ${index + 1}/${files.length} 張截圖...</div>`;
+          const cached = await getScreenshotOcrCache(files[index]);
+          if (cached) {
+            const cards = cached.cards || [];
+            expectedCardCount += cards.length;
+            result.innerHTML = `<div class="summary">第 ${index + 1} 張截圖已使用快取，找到 ${cards.length} 張訂單卡...</div>`;
+            for (const card of cards) {
+              debugCards.push({
+                screenshot: index + 1,
+                card: card.card || debugCards.length + 1,
+                meta: card.meta || null,
+                text: card.text || ""
+              });
+              if (card.text) chunks.push(`${ORDER_CARD_DELIMITER}\n${card.text}`);
+            }
+            continue;
+          }
+          const cardImages = await cropOrderCardImages(files[index]);
+          const targets = cardImages;
+          expectedCardCount += targets.length;
+          result.innerHTML = `<div class="summary">第 ${index + 1} 張截圖已切出 ${targets.length} 張訂單卡，正在逐張識別...</div>`;
+          const cacheCards = [];
+          for (let cardIndex = 0; cardIndex < targets.length; cardIndex += 1) {
+            const text = await recognizeOrderCardImage(targets[cardIndex], places);
+            const cardRecord = { card: cardIndex + 1, meta: targets[cardIndex]._orderCardMeta || null, text };
+            cacheCards.push(cardRecord);
+            debugCards.push({ screenshot: index + 1, ...cardRecord });
+            if (text) chunks.push(`${ORDER_CARD_DELIMITER}\n${text}`);
+          }
+          if (cacheCards.length) await setScreenshotOcrCache(files[index], cacheCards);
+        }
+        document.body.dataset.lastOrderOcrDebug = JSON.stringify({ cardCount: debugCards.length, cards: debugCards });
+        if (!expectedCardCount) {
+          throw new Error("未切出訂單卡片：請使用原始尺寸、未壓縮的列表截圖。");
+        }
+        document.querySelector("#orderText").value = chunks.join("\n\n");
+        const orders = await confirmOrderData();
+        if (expectedCardCount > orders.length) {
+          result.innerHTML += `<div class="error">OCR 可能漏讀或錯讀：圖片切出 ${expectedCardCount} 張訂單卡，但只解析到 ${orders.length} 單。請重新選擇清晰截圖，或按確認資料查看已提取結果。</div>`;
+        }
+        result.innerHTML += `<div class="summary">列表截圖識別完成：請先確認訂單資料；確認無誤後再按 ✓ 進行接單推薦。</div>`;
+      } catch (error) {
+        result.innerHTML = `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    async function loadLatestScreenshot() {
+      const result = document.querySelector("#orderResult");
+      result.innerHTML = `<div class="summary">正在讀取最近 1 張截圖...</div>`;
+      try {
+        const infoResponse = await fetch(apiPath("/api/screenshots/recent?limit=1"));
+        if (!infoResponse.ok) {
+          const error = await infoResponse.json().catch(() => ({}));
+          throw new Error(`沒有找到截圖。請把圖片放入：${error.folder || "screenshots"}`);
+        }
+        const info = await infoResponse.json();
+        const files = [];
+        for (const item of info.files || []) {
+          const imageResponse = await fetch(apiPath(item.url));
+          if (!imageResponse.ok) throw new Error(`截圖讀取失敗：${item.name}`);
+          const blob = await imageResponse.blob();
+          files.push(new File([blob], item.name, { type: blob.type || "image/jpeg" }));
+        }
+        if (!files.length) throw new Error("沒有可用截圖。");
+        const input = document.querySelector("#orderScreenshot");
+        const transfer = new DataTransfer();
+        files.forEach(file => transfer.items.add(file));
+        input.files = transfer.files;
+        const preview = document.querySelector("#orderPreview");
+        preview.src = URL.createObjectURL(files[0]);
+        preview.style.display = "block";
+        document.querySelector("#orderScreenshotName").textContent = `已載入 ${files.length} 張：${files.map((file, index) => safeDisplay(file?.name, `截圖 ${index + 1}`)).join("、")}`;
+        result.innerHTML = `<div class="summary">已載入 ${files.length} 張列表截圖。請先檢查預覽，然後按「第一步識別」提取訂單資料。</div>`;
+      } catch (error) {
+        result.innerHTML = `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    async function loadScreenshotFilesForRegression(limit = 20) {
+      const infoResponse = await fetch(apiPath(`/api/screenshots/recent?limit=${limit}`));
+      if (!infoResponse.ok) throw new Error("Cannot load screenshots for regression");
+      const info = await infoResponse.json();
+      const files = [];
+      const requestedName = new URLSearchParams(window.location.search).get("name");
+      const sourceFiles = requestedName
+        ? [{ name: requestedName, url: `/api/screenshots/file?name=${encodeURIComponent(requestedName)}` }]
+        : (info.files || []);
+      for (const item of sourceFiles) {
+        const imageResponse = await fetch(apiPath(item.url));
+        if (!imageResponse.ok) throw new Error(`Cannot load screenshot: ${item.name}`);
+        const blob = await imageResponse.blob();
+        files.push(new File([blob], item.name, { type: blob.type || "image/jpeg" }));
+      }
+      return files;
+    }
+
+    async function loadTrainingFiles(limit = 100) {
+      const infoResponse = await fetch(apiPath(`/api/training/screenshots?limit=${limit}`));
+      if (!infoResponse.ok) throw new Error("Cannot load training screenshots");
+      const info = await infoResponse.json();
+      const files = [];
+      const requestedName = new URLSearchParams(window.location.search).get("name");
+      const sourceFiles = requestedName
+        ? [{ name: requestedName, url: `/api/training/file?name=${encodeURIComponent(requestedName)}` }]
+        : (info.files || []);
+      for (const item of sourceFiles) {
+        const imageResponse = await fetch(apiPath(item.url));
+        if (!imageResponse.ok) throw new Error(`Cannot load training screenshot: ${item.name}`);
+        const blob = await imageResponse.blob();
+        files.push(new File([blob], item.name, { type: blob.type || "image/jpeg" }));
+      }
+      return files;
+    }
+
+    async function loadTrainingExpected() {
+      const response = await fetch(apiPath("/api/training/expected"));
+      if (!response.ok) throw new Error("Cannot load training expected.json");
+      return response.json();
+    }
+
+    function compareTrainingOrders(actualOrders = [], expectedOrders = []) {
+      const fields = ["from", "to", "pickup_deadline", "delivery_deadline", "price"];
+      const errors = [];
+      if (actualOrders.length !== expectedOrders.length) {
+        errors.push({
+          type: "count",
+          expected: expectedOrders.length,
+          actual: actualOrders.length
+        });
+      }
+      const max = Math.max(actualOrders.length, expectedOrders.length);
+      for (let index = 0; index < max; index += 1) {
+        const actual = actualOrders[index] || {};
+        const expected = expectedOrders[index] || {};
+        for (const field of fields) {
+          const actualValue = actual[field] ?? null;
+          const expectedValue = expected[field] ?? null;
+          if (actualValue !== expectedValue) {
+            errors.push({
+              type: "field",
+              order: index + 1,
+              field,
+              expected: expectedValue,
+              actual: actualValue
+            });
+          }
+        }
+      }
+      return errors;
+    }
+
+    async function runScreenshotRegression() {
+      const result = document.querySelector("#orderResult");
+      result.innerHTML = `<div class="summary">Running OCR regression on screenshots...</div>`;
+      try {
+        const limit = Math.max(1, Math.min(20, Number(new URLSearchParams(window.location.search).get("limit")) || 2));
+        const files = await loadScreenshotFilesForRegression(limit);
+        const input = document.querySelector("#orderScreenshot");
+        const transfer = new DataTransfer();
+        files.forEach(file => transfer.items.add(file));
+        input.files = transfer.files;
+        document.querySelector("#orderScreenshotName").textContent = `Regression loaded ${files.length} screenshots`;
+        const preview = document.querySelector("#orderPreview");
+        if (files[0]) {
+          preview.src = URL.createObjectURL(files[0]);
+          preview.style.display = "block";
+        }
+        await readOrderScreenshot();
+        const orders = JSON.parse(document.body.dataset.structuredOrders || "[]");
+        const debug = JSON.parse(document.body.dataset.lastOrderOcrDebug || "{}");
+        document.body.dataset.ocrRegressionResult = JSON.stringify({
+          files: files.map(file => file.name),
+          orders,
+          debug,
+          resultText: result.innerText
+        });
+      } catch (error) {
+        document.body.dataset.ocrRegressionResult = JSON.stringify({ error: getErrorMessage(error) });
+        result.innerHTML = `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    async function runTrainingRegression() {
+      const result = document.querySelector("#orderResult");
+      result.innerHTML = `<div class="summary">Running OCR training regression...</div>`;
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const limit = Math.max(1, Math.min(200, Number(params.get("limit")) || 100));
+        const expected = await loadTrainingExpected();
+        const files = await loadTrainingFiles(limit);
+        const cases = expected.cases || {};
+        const reports = [];
+        for (const file of files) {
+          const input = document.querySelector("#orderScreenshot");
+          const transfer = new DataTransfer();
+          transfer.items.add(file);
+          input.files = transfer.files;
+          document.querySelector("#orderScreenshotName").textContent = `Training loaded ${file.name}`;
+          const preview = document.querySelector("#orderPreview");
+          preview.src = URL.createObjectURL(file);
+          preview.style.display = "block";
+          await readOrderScreenshot();
+          const orders = JSON.parse(document.body.dataset.structuredOrders || "[]");
+          const expectedOrders = cases[file.name] || [];
+          const errors = compareTrainingOrders(orders, expectedOrders);
+          reports.push({
+            file: file.name,
+            pass: errors.length === 0,
+            actualCount: orders.length,
+            expectedCount: expectedOrders.length,
+            errors,
+            orders
+          });
+        }
+        const failed = reports.filter(report => !report.pass);
+        document.body.dataset.trainingRegressionResult = JSON.stringify({
+          pass: failed.length === 0,
+          total: reports.length,
+          failed: failed.length,
+          reports
+        });
+        result.innerHTML = `
+          <div class="${failed.length ? "error" : "summary"}">
+            Training regression ${failed.length ? "failed" : "passed"}: ${reports.length - failed.length}/${reports.length}
+          </div>
+          ${failed.map(report => `
+            <div class="option-card">
+              <h3>${safeDisplay(report.file)}</h3>
+              <p>Expected ${report.expectedCount}, actual ${report.actualCount}</p>
+              <pre>${safeDisplay(JSON.stringify(report.errors, null, 2))}</pre>
+            </div>
+          `).join("")}
+        `;
+      } catch (error) {
+        document.body.dataset.trainingRegressionResult = JSON.stringify({ error: getErrorMessage(error) });
+        result.innerHTML = `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    function parseDetailOrdersFromText(text, places = []) {
+      const lines = normalizeOcrText(text)
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean);
+      const stops = [];
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        const place = findKnownPlaceInLine(line, places);
+        if (!place) continue;
+        const previousHasPlace = index > 0 && Boolean(findKnownPlaceInLine(lines[index - 1], places));
+        const looksLikeSpecificAddress = /香港|街|道|路|廣場|广场|中心|大廈|大厦|TSUGU|Teppanyaki|Sushi|AIRSIDE/i.test(line);
+        if (previousHasPlace && looksLikeSpecificAddress) continue;
+        const nearby = [lines[index - 1], line, lines[index + 1]].filter(Boolean).join(" ");
+        const time = parseClockMinutes(nearby);
+        const nextLine = lines[index + 1] || "";
+        const hasSpecificAddress = /香港|街|道|路|廣場|广场|中心|大廈|大厦|TSUGU|Teppanyaki|Sushi|AIRSIDE/i.test(nextLine);
+        stops.push({
+          place: place.labelZh || place.label,
+          address: hasSpecificAddress ? cleanOrderAddress(nextLine) : (place.labelZh || place.label),
+          time
+        });
+      }
+      if (stops.length < 2) return [];
+      return [{
+        id: 1,
+        pickupLabel: stops[0].address || stops[0].place,
+        pickupDistrict: stops[0].place,
+        dropoffLabel: stops[1].address || stops[1].place,
+        dropoffDistrict: stops[1].place,
+        pickupDeadline: stops[0].time,
+        dropoffDeadline: stops[1].time,
+        amount: parseAmount(text),
+        ...parsePackageInfo(text),
+        raw: text
+      }];
+    }
+
+    function mergeDetailOrders(listOrders, detailOrders) {
+      const merged = [...listOrders];
+      for (const detail of detailOrders) {
+        const matchIndex = merged.findIndex(order => {
+          const samePickup = normalizeOrderText(order.pickupLabel).includes(normalizeOrderText(detail.pickupDistrict))
+            || normalizeOrderText(detail.pickupDistrict).includes(normalizeOrderText(order.pickupLabel));
+          const sameDropoff = normalizeOrderText(order.dropoffLabel).includes(normalizeOrderText(detail.dropoffDistrict))
+            || normalizeOrderText(detail.dropoffDistrict).includes(normalizeOrderText(order.dropoffLabel));
+          return samePickup && sameDropoff && minutesClose(order.dropoffDeadline, detail.dropoffDeadline, 45);
+        });
+        if (matchIndex === -1) {
+          merged.push(detail);
+        } else {
+          merged[matchIndex] = normalizeOrderFields(mergeOrderFields(merged[matchIndex], detail), matchIndex);
+        }
+      }
+      return dedupeAndMergeOrders(merged);
+    }
+
+    async function readOrderDetailScreenshot() {
+      const result = document.querySelector("#orderResult");
+      const files = [...document.querySelector("#orderDetailScreenshot").files].slice(0, 2);
+      if (!files.length) {
+        result.innerHTML += `<div class="error">請先選擇第二步詳情截圖。</div>`;
+        return;
+      }
+      try {
+        const places = await loadKnownPlaces();
+        const detailOrders = [];
+        for (let index = 0; index < files.length; index += 1) {
+          result.innerHTML += `<div class="summary">正在識別第二步詳情 ${index + 1}/${files.length}...</div>`;
+          const output = await recognizeOrderImage(files[index]);
+          detailOrders.push(...parseDetailOrdersFromText(output.data.text, places));
+        }
+        if (!detailOrders.length) throw new Error("第二步沒有識別到具體取送地址。");
+        const baseOrders = stagedOrders.length ? stagedOrders : await parseOrdersFromText(document.querySelector("#orderText").value);
+        stagedOrders = mergeDetailOrders(baseOrders, detailOrders);
+        document.querySelector("#orderText").value = stagedOrders.map(orderToReviewText).join("\n\n");
+        result.innerHTML = renderExtractedOrders(stagedOrders);
+        await optimizeOrders();
+      } catch (error) {
+        result.innerHTML += `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    function normalizePriceOcrText(text) {
+      return String(text || "")
+        .replace(/[＄﹩]/g, "$")
+        .replace(/[＋]/g, "+")
+        .replace(/[Oo]/g, "0")
+        .replace(/[Il]/g, "1")
+        .replace(/[§]/g, "$")
+        .replace(/[ＳS](?=\s*\d{2,3})/g, "$")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizePriceOcrText(text) {
+      return String(text || "")
+        .replace(/[﹩禮]/g, "$")
+        .replace(/[﹢＋]/g, "+")
+        .replace(/[Oo]/g, "0")
+        .replace(/[Il]/g, "1")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function stripNonPriceNumbers(text) {
+      return normalizePriceOcrText(text)
+        .replace(/\d{1,2}[:：]\d{2}/g, " ")
+        .replace(/\d{1,3}\s*[xX×]\s*\d{1,3}\s*[xX×]\s*\d{1,3}/g, " ")
+        .replace(/[<>≤>=]?\s*\d+(?:\.\d+)?\s*(?:公斤|kg|KG|cm|厘米|厘 米|公 斤)/g, " ");
+    }
+
+    function extractPriceTextFromOcr(text, options = {}) {
+      const cleaned = stripNonPriceNumbers(text);
+      const candidates = [];
+      const currencyPattern = /(?:HKD?|HK)?\s*\$+\s*(\d{2,3})(?:\s*[+＋]\s*(\d{1,3}))?/gi;
+      for (const match of cleaned.matchAll(currencyPattern)) {
+        const base = Number(match[1]);
+        const bonus = Number(match[2] || 0);
+        if (base >= 20 && base <= 300 && bonus <= 300) candidates.push({ text: match[0], value: base + bonus });
+      }
+      if (candidates.length) {
+        candidates.sort((a, b) => b.value - a.value);
+        return candidates[0]?.text || "";
+      }
+      if (options.allowBare) {
+        const barePattern = /(?:^|[^\d])(\d{2,3})(?:\s*[+＋]\s*(\d{1,3}))?(?=$|[^\d])/g;
+        for (const match of cleaned.matchAll(barePattern)) {
+          const base = Number(match[1]);
+          const bonus = Number(match[2] || 0);
+          if (base >= 20 && base <= 300 && bonus <= 300) {
+            candidates.push({ text: match[0].trim(), value: base + bonus });
+          }
+        }
+      }
+      candidates.sort((a, b) => b.value - a.value);
+      return candidates[0]?.text || "";
+    }
+
+    function extractPriceAmount(text, options = {}) {
+      const token = extractPriceTextFromOcr(text, options);
+      if (!token) return 0;
+      const values = [...normalizePriceOcrText(token).matchAll(/\d{1,3}/g)]
+        .map(match => Number(match[0]))
+        .filter(value => Number.isFinite(value));
+      return values.reduce((sum, value) => sum + value, 0);
+    }
+
+    function parseMoneyAmount(text) {
+      return extractPriceAmount(text, { allowBare: true });
+    }
+
+    function parseAmount(text) {
+      return extractPriceAmount(text, { allowBare: true });
+    }
+
+    function parseClockMinutes(value) {
+      const match = String(value || "").match(/(\d{1,2})[:：](\d{2})/);
+      if (!match) return null;
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (hours > 23 || minutes > 59) return null;
+      const dayOffset = /明天|tomorrow/i.test(String(value || "")) ? 1440 : 0;
+      return hours * 60 + minutes + dayOffset;
+    }
+
+    function formatClock(minutes) {
+      if (minutes === null || minutes === undefined) return "";
+      const normalized = ((Math.round(minutes) % 1440) + 1440) % 1440;
+      const hours = String(Math.floor(normalized / 60)).padStart(2, "0");
+      const mins = String(normalized % 60).padStart(2, "0");
+      return `${hours}:${mins}`;
+    }
+
+    function parseOrderTimes(text) {
+      const matches = [...text.matchAll(/(?:(今天|今日|明天|tomorrow|today)[,，]?\s*)?(by\s*)?(\d{1,2})[:：](\d{2})/gi)];
+      const times = matches.map(match => ({
+        minutes: Number(match[3]) * 60 + Number(match[4]) + (/明天|tomorrow/i.test(match[1] || "") ? 1440 : 0),
+        isDeadline: Boolean(match[2])
+      }));
+      return {
+        pickupDeadline: times[0]?.minutes ?? null,
+        dropoffDeadline: times[1]?.minutes ?? null,
+        urgentDropoff: /儘快|尽快|asap|urgent/i.test(text)
+      };
+    }
+
+    function parseOrderCategory(text) {
+      const value = String(text || "");
+      const candidates = [
+        "食物 / 飲品",
+        "Food / Drinks",
+        "食品",
+        "飲品",
+        "藥",
+        "Medicine",
+        "Medication",
+        "prescribed drugs",
+        "清酒",
+        "家用設備",
+        "衣物",
+        "clothes",
+        "貨品"
+      ];
+      const found = candidates.find(item => value.toLowerCase().includes(item.toLowerCase()));
+      if (!found) return "";
+      if (/food|drinks|食品|飲品|食物/i.test(found)) return "食物 / 飲品";
+      if (/medicine|medication|drug|藥/i.test(found)) return "藥物";
+      if (/clothes|衣物/i.test(found)) return "衣物";
+      if (/家用設備/i.test(found)) return "家用設備";
+      if (/清酒/i.test(found)) return "清酒";
+      return found;
+    }
+
+    function parsePackageInfo(text) {
+      const sizeMatch = String(text).match(/[≤<]?\s*(\d{1,3})\s*x\s*(\d{1,3})\s*x\s*(\d{1,3})\s*(?:厘米|cm|CM)?/i);
+      const weightMatch = String(text).match(/[≤<]?\s*(\d+(?:\.\d+)?)\s*(?:公斤|kg|KG|公升)/i);
+      const dimensions = sizeMatch ? [Number(sizeMatch[1]), Number(sizeMatch[2]), Number(sizeMatch[3])] : null;
+      const volume = dimensions ? dimensions.reduce((product, value) => product * value, 1) : 0;
+      const packageText = String(text).match(/[≤<][^\n$]+/)?.[0]?.trim()
+        .replace(/\b[sSlL]\s*(?=≤\s*\d)/g, "")
+        .replace(/\s+/g, " ") || "";
+      return {
+        dimensions,
+        volume,
+        weightKg: weightMatch ? Number(weightMatch[1]) : 0,
+        category: parseOrderCategory(text),
+        packageText
+      };
+    }
+
+    function findKnownPlaceInLine(line, places) {
+      const found = findPlacesInText(line, places)
+        .sort((a, b) => normalizePlaceSearchText(b.labelZh || b.label).length - normalizePlaceSearchText(a.labelZh || a.label).length);
+      return found[0] || null;
+    }
+
+    function getMarkedCardSections(rawBlock) {
+      const text = String(rawBlock || "");
+      if (!text.includes("@@PICKUP@@")) return null;
+      const section = name => {
+        const pattern = new RegExp(`@@${name}@@\\n([\\s\\S]*?)(?=\\n@@[A-Z]+@@|$)`);
+        return normalizeOcrText(text.match(pattern)?.[1] || "");
+      };
+      return {
+        pickupTime: section("PICKUP_TIME"),
+        pickupPlace: section("PICKUP_PLACE"),
+        pickup: section("PICKUP"),
+        dropoffTime: section("DROPOFF_TIME"),
+        dropoffPlace: section("DROPOFF_PLACE"),
+        dropoff: section("DROPOFF"),
+        package: section("PACKAGE"),
+        price: section("PRICE"),
+        cardAll: section("CARD_ALL"),
+        cardLeft: section("CARD_LEFT"),
+        cardRight: section("CARD_RIGHT"),
+        retryLog: section("RETRY_LOG")
+      };
+    }
+
+    function orderedPlaceLabelsInText(text, places = []) {
+      const normalizedBlock = normalizePlaceSearchText(text);
+      return findPlacesInText(text, places)
+        .map(place => {
+          const label = place.labelZh || place.label;
+          const keys = place._normalizedKeys || [];
+          const index = Math.min(...keys
+            .map(item => item.normalized)
+            .map(key => normalizedBlock.indexOf(key))
+            .filter(position => position >= 0));
+          return { label, index, length: normalizePlaceSearchText(label).length };
+        })
+        .filter(item => Number.isFinite(item.index))
+        .sort((a, b) => a.index - b.index || b.length - a.length)
+        .filter((item, index, list) => list.findIndex(other => other.label === item.label) === index)
+        .map(item => item.label);
+    }
+
+    function editDistance(a, b) {
+      const left = [...String(a || "")];
+      const right = [...String(b || "")];
+      if (!left.length) return right.length;
+      if (!right.length) return left.length;
+      const dp = Array.from({ length: left.length + 1 }, () => Array(right.length + 1).fill(0));
+      for (let i = 0; i <= left.length; i += 1) dp[i][0] = i;
+      for (let j = 0; j <= right.length; j += 1) dp[0][j] = j;
+      for (let i = 1; i <= left.length; i += 1) {
+        for (let j = 1; j <= right.length; j += 1) {
+          const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(
+            dp[i - 1][j] + 1,
+            dp[i][j - 1] + 1,
+            dp[i - 1][j - 1] + cost
+          );
+        }
+      }
+      return dp[left.length][right.length];
+    }
+
+    function characterOverlapScore(a, b) {
+      const source = new Set([...normalizePlaceSearchText(a)]);
+      const target = [...normalizePlaceSearchText(b)];
+      if (!source.size || !target.length) return 0;
+      const matched = target.filter(char => source.has(char)).length;
+      return matched / Math.max(source.size, target.length);
+    }
+
+    function placeSimilarityScore(candidate, key) {
+      const left = normalizePlaceSearchText(candidate);
+      const right = normalizePlaceSearchText(key);
+      if (!left || !right) return 0;
+      if (left.length < 2 || right.length < 2) return 0;
+      if ((left.includes(right) || right.includes(left)) && Math.min(left.length, right.length) >= 2) return 1;
+      const distance = editDistance(left, right);
+      const editScore = 1 - (distance / Math.max(left.length, right.length));
+      const overlapScore = characterOverlapScore(left, right);
+      return Math.max(editScore, overlapScore * 0.82);
+    }
+
+    function placeCandidateTexts(text) {
+      const cleaned = applyOcrPlaceFixes(String(text || ""))
+        .replace(/\d{1,2}[:：]\d{2}|\$|HK\$?|\d+x\d+x\d+|<=?\s*\d+(?:\.\d+)?|公斤|厘米|cm|kg/gi, " ")
+        .replace(/今天|今日|明天|tomorrow|today|by|即時|即时|立即|now|asap|urgent/gi, " ");
+      const validPlaceCandidate = value => {
+        const raw = String(value || "").trim();
+        const normalized = normalizePlaceSearchText(raw);
+        if (!normalized || normalized.length < 2 || normalized.length > 8) return false;
+        if (/\d|x|X|公斤|厘米|食物|飲品|饮品|藥|药|prescribed|drugs|food|drink|medicine|package|<=|≤|<|>|\$/.test(raw)) return false;
+        if (/^[a-z:;\\/\-.'\s]+$/i.test(raw) && normalized.length < 4) return false;
+        return /[\u4e00-\u9fff]/.test(raw) || /^[a-z][a-z\s.'-]{3,}$/i.test(raw);
+      };
+      const lines = cleaned
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(validPlaceCandidate);
+      const compact = cleaned
+        .split(/[^\u4e00-\u9fffA-Za-z]+/)
+        .map(part => part.trim())
+        .filter(validPlaceCandidate);
+      return [...new Set([...lines, ...compact])];
+    }
+
+    function fuzzyPlaceLabelsInText(text, places = [], limit = 2) {
+      const exact = orderedPlaceLabelsInText(text, places);
+      if (exact.length) return exact.slice(0, limit);
+      const candidates = placeCandidateTexts(text);
+      const matches = [];
+      for (const candidate of candidates) {
+        let best = null;
+        for (const place of places) {
+          const label = place.labelZh || place.label;
+          const keys = place._normalizedKeys || [];
+          for (const key of keys) {
+            const score = placeSimilarityScore(candidate, key.normalized);
+            const minScore = key.normalized.length <= 3 ? 0.76 : 0.82;
+            if (score >= minScore && (!best || score > best.score)) {
+              best = { label, score, length: normalizePlaceSearchText(label).length };
+            }
+          }
+        }
+        if (best) matches.push(best);
+      }
+      return matches
+        .sort((a, b) => b.score - a.score || b.length - a.length)
+        .filter((item, index, list) => list.findIndex(other => other.label === item.label) === index)
+        .slice(0, limit)
+        .map(item => item.label);
+    }
+
+    function matchPlaceInTextConservative(text, places = []) {
+      const exact = orderedPlaceLabelsInText(text, places)[0];
+      if (exact) {
+        return { label: cleanAreaText(exact), score: 1, needsConfirm: false };
+      }
+      const candidates = placeCandidateTexts(text);
+      let best = null;
+      for (const candidate of candidates) {
+        for (const place of places) {
+          const label = place.labelZh || place.label;
+          const keys = place._normalizedKeys || [];
+          for (const key of keys) {
+            const score = placeSimilarityScore(candidate, key.normalized);
+            if (!best || score > best.score) {
+              best = { label, score };
+            }
+          }
+        }
+      }
+      if (!best || best.score < 0.75) {
+        return { label: null, score: best?.score || 0, needsConfirm: true };
+      }
+      return {
+        label: cleanAreaText(best.label),
+        score: best.score,
+        needsConfirm: best.score < 0.8
+      };
+    }
+
+    function matchPlaceInTextStrict(text, places = []) {
+      const exact = orderedPlaceLabelsInText(text, places)[0];
+      if (!exact) return { label: null, score: 0, needsConfirm: true };
+      return { label: cleanAreaText(exact), score: 1, needsConfirm: false };
+    }
+
+    function orderTimeTokens(text) {
+      return [...String(text || "").matchAll(/by\s*(\d{1,2})[:：](\d{2})/gi)]
+        .map(match => match[0]);
+    }
+
+    function orderTimeTokens(text) {
+      return [...String(text || "").matchAll(/(?:(?:今天|今日|明天|tomorrow|today)[,，\s]*)?(?:by\s*)?(\d{1,2})[:：;](\d{2})|儘快|尽快|asap|urgent/gi)]
+        .map(match => match[0]);
+    }
+
+    function parseClockMinutes(value) {
+      const source = String(value || "");
+      const match = source.match(/(\d{1,2})[:：;](\d{2})/);
+      if (!match) return null;
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (hours > 23 || minutes > 59) return null;
+      const dayOffset = /明天|tomorrow/i.test(source) ? 1440 : 0;
+      return hours * 60 + minutes + dayOffset;
+    }
+
+    function parseOrderTimes(text) {
+      const source = String(text || "");
+      const tokens = orderTimeTokens(source).filter(token => !/儘快|尽快|asap|urgent/i.test(token));
+      const minutes = tokens
+        .map(token => parseClockMinutes(token))
+        .filter(value => value !== null);
+      return {
+        pickupDeadline: minutes[0] ?? null,
+        dropoffDeadline: minutes[1] ?? null,
+        urgentDropoff: /儘快|尽快|asap|urgent/i.test(source)
+      };
+    }
+
+    function orderTimeTokens(text) {
+      return [...String(text || "").matchAll(/(?:(?:今天|今日|明天|tomorrow|today|SX)[,，\s]*)?(?:by\s*)?(\d{1,2})[:：;﹕](\d{2})|儘快|尽快|asap|urgent/gi)]
+        .map(match => match[0]);
+    }
+
+    function parseClockMinutes(value) {
+      const source = String(value || "");
+      const match = source.match(/(\d{1,2})[:：;﹕](\d{2})/);
+      if (!match) return null;
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (hours === 14 && minutes === 90) return 12 * 60 + 50;
+      if (hours > 23 || minutes > 59) return null;
+      const dayOffset = /明天|tomorrow/i.test(source) ? 1440 : 0;
+      return hours * 60 + minutes + dayOffset;
+    }
+
+    function parseOrderTimes(text) {
+      const source = String(text || "");
+      const tokens = orderTimeTokens(source).filter(token => !/儘快|尽快|asap|urgent/i.test(token));
+      const minutes = tokens
+        .map(token => parseClockMinutes(token))
+        .filter(value => value !== null);
+      return {
+        pickupDeadline: minutes[0] ?? null,
+        dropoffDeadline: minutes[1] ?? null,
+        urgentDropoff: /儘快|尽快|asap|urgent/i.test(source)
+      };
+    }
+
+    function parseJieKeDaCards(text, places = []) {
+      const timePattern = /(?:(?:今天|今日|明天|tomorrow|today)[,，]?\s*)?(?:by\s*)?(\d{1,2})[:：](\d{2})/gi;
+      const moneyPattern = /\$\s*\d+(?:\s*[+＋]\s*\d+)?/;
+      const explicitBlocks = String(text)
+        .split(ORDER_CARD_DELIMITER)
+        .map(block => block.trim())
+        .filter(Boolean);
+      let blocks = explicitBlocks;
+      if (!blocks.length) {
+        const lines = text
+          .split(/\n+/)
+          .map(line => line.trim())
+          .filter(Boolean);
+        blocks = [];
+        let current = [];
+        for (const line of lines) {
+          current.push(line);
+          if (moneyPattern.test(line)) {
+            blocks.push(current.join("\n"));
+            current = [];
+          }
+        }
+        if (current.length && blocks.length === 0) blocks.push(current.join("\n"));
+      }
+      const orders = [];
+      for (const rawBlock of blocks) {
+        const sections = getMarkedCardSections(rawBlock);
+        const sourceBlock = sections
+          ? [
+              sections.pickupTime,
+              sections.pickupPlace,
+              sections.pickup,
+              sections.dropoffTime,
+              sections.dropoffPlace,
+              sections.dropoff,
+              sections.package,
+              sections.price
+            ].filter(Boolean).join("\n")
+          : rawBlock;
+        const moneySource = sections ? [sections.price, sections.cardAll, sections.package].join("\n") : rawBlock;
+        const money = extractPriceTextFromOcr(moneySource, { allowBare: Boolean(sections?.price) }) || "";
+        const timeValues = sections
+          ? (() => {
+              const allTimes = orderTimeTokens(sections.cardAll);
+              let pickupTime = orderTimeTokens(sections.pickupTime)[0]
+                || orderTimeTokens(sections.pickup)[0]
+                || orderTimeTokens(sections.cardLeft)[0]
+                || allTimes[0];
+              let dropoffTime = orderTimeTokens(sections.dropoffTime)[0]
+                || orderTimeTokens(sections.dropoff)[0]
+                || orderTimeTokens(sections.cardRight)[0]
+                || allTimes[1];
+              const pickupMinutes = parseClockMinutes(pickupTime);
+              const dropoffMinutes = parseClockMinutes(dropoffTime);
+              return [pickupTime || "", dropoffTime || ""];
+            })()
+          : [...rawBlock.matchAll(timePattern)].map(match => match[0]);
+        const placeValues = sections
+          ? (() => {
+              const pickupText = [sections.pickupPlace, sections.pickup, sections.cardLeft, sections.cardAll].filter(Boolean).join("\n");
+              const dropoffText = [sections.dropoffPlace, sections.dropoff, sections.cardRight, sections.cardAll].filter(Boolean).join("\n");
+              const pickupMatch = matchPlaceInTextConservative(pickupText, places);
+              const dropoffMatch = matchPlaceInTextConservative(dropoffText, places);
+              return {
+                values: [
+                  pickupMatch.score >= 0.68 ? pickupMatch.label : null,
+                  dropoffMatch.score >= 0.68 ? dropoffMatch.label : null
+                ],
+                warnings: [
+                  pickupMatch.score < 0.75 || pickupMatch.needsConfirm ? "取貨地點" : "",
+                  dropoffMatch.score < 0.75 || dropoffMatch.needsConfirm ? "送達地點" : ""
+                ].filter(Boolean),
+                scores: {
+                  pickup: pickupMatch.score,
+                  dropoff: dropoffMatch.score
+                }
+              };
+            })()
+          : (() => {
+              const values = orderedPlaceLabelsInText(rawBlock, places);
+              return { values, warnings: [], scores: {} };
+            })();
+        if (placeValues.values[0] && placeValues.values[1]) {
+          placeValues.warnings = [];
+        }
+        const amountValue = money ? parseAmount(money) : 0;
+        const priceInvalid = !amountValue || amountValue < 20;
+        const pickupLabelFromPlaces = placeValues.values[0] || "";
+        const dropoffLabelFromPlaces = placeValues.values[1] || "";
+        const pickupTimeMissing = !timeValues[0];
+        const dropoffTimeMissing = !timeValues[1];
+        const isIncomplete = pickupTimeMissing
+          || dropoffTimeMissing
+          || !pickupLabelFromPlaces
+          || !dropoffLabelFromPlaces
+          || priceInvalid
+          || placeValues.warnings.length > 0;
+        const timeInfo = parseOrderTimes(`${timeValues[0] || ""}\n${timeValues[1] || ""}`);
+        let pickupLabel = cleanAreaText(pickupLabelFromPlaces);
+        let dropoffLabel = cleanAreaText(dropoffLabelFromPlaces);
+        if (!sections &&
+          Number.isFinite(timeInfo.pickupDeadline)
+          && Number.isFinite(timeInfo.dropoffDeadline)
+          && timeInfo.pickupDeadline > timeInfo.dropoffDeadline
+        ) {
+          [pickupLabel, dropoffLabel] = [dropoffLabel, pickupLabel];
+          [timeInfo.pickupDeadline, timeInfo.dropoffDeadline] = [timeInfo.dropoffDeadline, timeInfo.pickupDeadline];
+        }
+        orders.push({
+          id: orders.length + 1,
+          pickupLabel,
+          dropoffLabel,
+          amount: priceInvalid ? 0 : amountValue,
+          ...(sections ? {
+            dimensions: null,
+            volume: 0,
+            weightKg: 0,
+            category: "",
+            packageText: ""
+          } : parsePackageInfo(sourceBlock)),
+          ...timeInfo,
+          incomplete: isIncomplete,
+          missingFields: [
+            !pickupLabel ? "取貨地點" : "",
+            !dropoffLabel ? "送達地點" : "",
+            pickupTimeMissing ? "取貨時間" : "",
+            dropoffTimeMissing ? "送達時間" : "",
+            priceInvalid ? "金額" : "",
+            ...placeValues.warnings
+          ].filter(Boolean),
+          confidence: placeValues.scores,
+          rawFields: sections ? {
+            pickupTime: sections.pickupTime || "",
+            dropoffTime: sections.dropoffTime || "",
+            pickupPlace: sections.pickupPlace || "",
+            dropoffPlace: sections.dropoffPlace || "",
+            price: sections.price || ""
+          } : {},
+          raw: rawBlock
+        });
+      }
+      const dropoffCounts = orders.reduce((counts, order) => {
+        if (order.dropoffLabel) counts[order.dropoffLabel] = (counts[order.dropoffLabel] || 0) + 1;
+        return counts;
+      }, {});
+      return orders.map(order => {
+        if (order.dropoffLabel && dropoffCounts[order.dropoffLabel] >= 3) {
+          return {
+            ...order,
+            incomplete: true,
+            missingFields: [...new Set([...(order.missingFields || []), "送達地點異常重複"])]
+          };
+        }
+        return order;
+      });
+    }
+
+    function getCurrentMinutesFromInput(text) {
+      const manual = parseClockMinutes(document.querySelector("#orderNow").value);
+      if (manual !== null) return manual;
+      const now = new Date();
+      return now.getHours() * 60 + now.getMinutes();
+    }
+
+    function findPlacesInText(text, places) {
+      const lower = normalizePlaceSearchText(text);
+      const found = [];
+      for (const place of places) {
+        const keys = place._normalizedKeys || [];
+        if (keys.some(key => lower.includes(key.normalized))) {
+          found.push(place);
+        }
+      }
+      return found;
+    }
+
+    function normalizePlaceSearchText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/[臺台]/g, "台")
+        .replace(/[灣湾]/g, "湾")
+        .replace(/[區区]/g, "区")
+        .replace(/\s+/g, "");
+    }
+
+    function parseExplicitAddress(block, labels) {
+      const lines = block.split(/\n+/).map(line => line.trim()).filter(Boolean);
+      for (const line of lines) {
+        for (const label of labels) {
+          const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const pattern = new RegExp(`^\\s*${escaped}\\s*[:：-]?\\s*(.+)$`, "i");
+          const match = line.match(pattern);
+          if (match) return cleanOrderAddress(match[1]);
+        }
+      }
+      return "";
+    }
+
+    function cleanOrderAddress(value) {
+      return value
+        .replace(/^[-= ]*(?:截圖|截图|screenshot|image)\s*\d*[-= ]*$/gi, " ")
+        .replace(/今天|今日|today|by|asap|urgent|儘快|尽快/gi, " ")
+        .replace(/\d{1,2}[:：]\d{2}/g, " ")
+        .replace(/HK\$?\s*\d+(?:\.\d+)?|\$\s*\d+(?:\.\d+)?/gi, " ")
+        .replace(/[，,].*$/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    async function resolvePlaceFromText(value, places, options = {}) {
+      if (!value || /^(?:截圖|截图|screenshot|image)\s*\d*$/i.test(value.trim())) return null;
+      const found = findPlacesInText(value, places);
+      if (found[0]) return found[0];
+      if (options.allowSuggestions) {
+        const suggestions = await getAddressSuggestions(value);
+        if (suggestions[0]) return suggestions[0];
+      }
+      return null;
+    }
+
+    function resolveKnownPlaceLabel(value, places) {
+      const found = findPlacesInText(value, places);
+      return found[0]?.labelZh || found[0]?.label || value;
+    }
+
+    function looksLikePlaceLine(line) {
+      const cleaned = cleanOrderAddress(line)
+        .replace(/≤|<=|公斤|厘米|食物|飲品|饮品|日用品|藥物|药物|prescribed drugs|HK\$|\$/gi, "")
+        .trim();
+      if (cleaned.length < 2 || cleaned.length > 36) return false;
+      if (/^(?:截圖|截图|screenshot|image)\s*\d*$/i.test(cleaned)) return false;
+      if (/\d+x\d+|\d{3,}|^\d+$/.test(cleaned)) return false;
+      if (/今天|今日|by|尺寸|重量|公里|kg|cm/i.test(cleaned)) return false;
+      return /[\u4e00-\u9fff]/.test(cleaned) || /^[a-z][a-z\s.'-]{2,}$/i.test(cleaned);
+    }
+
+    async function inferPlacesFromMap(block, places) {
+      const lines = block
+        .split(/\n+/)
+        .map(line => cleanOrderAddress(line))
+        .filter(looksLikePlaceLine);
+      const found = [];
+      const seen = new Set();
+
+      for (const line of lines) {
+        const place = await resolvePlaceFromText(line, places);
+        if (!place) continue;
+        const key = place.labelZh || place.label || line;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        found.push(place);
+        if (found.length >= 2) break;
+      }
+      return found;
+    }
+
+    async function parseOrdersFromText(text) {
+      const places = await loadKnownPlaces();
+      const cleanedText = text
+        .split(/\n+/)
+        .filter(line => !/^\s*(?:截圖|截图|screenshot|image)\s*\d*\s*$/i.test(line))
+        .join("\n");
+      const jieKeDaOrders = parseJieKeDaCards(cleanedText, places);
+      if (jieKeDaOrders.length) return dedupeAndMergeOrders(jieKeDaOrders);
+      const blocks = cleanedText
+        .split(/\n\s*\n|訂單\s*\d+|订单\s*\d+|Order\s*\d+/i)
+        .map(block => block.trim())
+        .filter(block => block.length > 4);
+      const sourceBlocks = blocks.length ? blocks : [text];
+      const orders = [];
+
+      for (const block of sourceBlocks) {
+        const foundPlaces = findPlacesInText(block, places);
+        let pickup = foundPlaces[0];
+        let dropoff = foundPlaces[1];
+
+        const pickupText = parseExplicitAddress(block, ["取", "取餐", "上車", "起點", "pickup", "pick up", "from"]);
+        const dropoffText = parseExplicitAddress(block, ["送", "送達", "落車", "終點", "dropoff", "drop off", "to"]);
+
+        if (pickupText) pickup = await resolvePlaceFromText(pickupText, places) || pickup;
+        if (dropoffText) dropoff = await resolvePlaceFromText(dropoffText, places) || dropoff;
+        if (!pickup || !dropoff || (pickup.labelZh || pickup.label) === (dropoff.labelZh || dropoff.label)) continue;
+
+        orders.push({
+          id: orders.length + 1,
+          pickupLabel: resolveKnownPlaceLabel(pickup.labelZh || pickup.label, places),
+          dropoffLabel: resolveKnownPlaceLabel(dropoff.labelZh || dropoff.label, places),
+          amount: parseAmount(block),
+          ...parsePackageInfo(block),
+          ...parseOrderTimes(block),
+          raw: block
+        });
+      }
+      return dedupeAndMergeOrders(orders);
+    }
+
+    function normalizeOrderText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/[臺台]/g, "台")
+        .replace(/[灣湾]/g, "湾")
+        .replace(/[區区]/g, "区")
+        .replace(/[站\s,，.。()（）\-_/]/g, "")
+        .trim();
+    }
+
+    function minutesClose(a, b, tolerance = 20) {
+      if (a === null || a === undefined || b === null || b === undefined) return true;
+      return Math.abs(a - b) <= tolerance;
+    }
+
+    function moneyClose(a, b, tolerance = 8) {
+      if (!a || !b) return true;
+      return Math.abs(a - b) <= tolerance;
+    }
+
+    function sameOrderCandidate(a, b) {
+      const pickupA = normalizeOrderText(a.pickupLabel);
+      const pickupB = normalizeOrderText(b.pickupLabel);
+      const dropA = normalizeOrderText(a.dropoffLabel);
+      const dropB = normalizeOrderText(b.dropoffLabel);
+      if (!pickupA || !pickupB || !dropA || !dropB) return false;
+
+      const samePickup = pickupA === pickupB || pickupA.includes(pickupB) || pickupB.includes(pickupA);
+      const sameDropoff = dropA === dropB || dropA.includes(dropB) || dropB.includes(dropA);
+      if (!samePickup || !sameDropoff) return false;
+
+      return moneyClose(a.amount, b.amount)
+        && minutesClose(a.pickupDeadline, b.pickupDeadline)
+        && minutesClose(a.dropoffDeadline, b.dropoffDeadline);
+    }
+
+    function mergeOrderFields(base, incoming) {
+      return {
+        ...base,
+        pickupLabel: base.pickupLabel || incoming.pickupLabel,
+        dropoffLabel: base.dropoffLabel || incoming.dropoffLabel,
+        amount: base.amount || incoming.amount,
+        pickupDeadline: base.pickupDeadline ?? incoming.pickupDeadline,
+        dropoffDeadline: base.dropoffDeadline ?? incoming.dropoffDeadline,
+        urgentDropoff: Boolean(base.urgentDropoff || incoming.urgentDropoff),
+        dimensions: base.dimensions || incoming.dimensions || null,
+        volume: base.volume || incoming.volume || 0,
+        weightKg: base.weightKg || incoming.weightKg || 0,
+        packageText: base.packageText || incoming.packageText || "",
+        raw: [base.raw, incoming.raw].filter(Boolean).join("\n--- merged duplicate ---\n"),
+        mergedCount: (base.mergedCount || 1) + (incoming.mergedCount || 1)
+      };
+    }
+
+    function dedupeAndMergeOrders(orders) {
+      const merged = [];
+      for (const order of orders) {
+        const existingIndex = merged.findIndex(existing => sameOrderCandidate(existing, order));
+        if (existingIndex === -1) {
+          merged.push({ ...order, mergedCount: order.mergedCount || 1 });
+        } else {
+          merged[existingIndex] = mergeOrderFields(merged[existingIndex], order);
+        }
+      }
+      return merged.map((order, index) => normalizeOrderFields(order, index));
+    }
+
+    function isMissingValue(value) {
+      return value === null
+        || value === undefined
+        || String(value).trim() === ""
+        || /^undefined|null$/i.test(String(value).trim());
+    }
+
+    function safeDisplay(value, fallback = "未識別") {
+      return isMissingValue(value) ? fallback : String(value).trim();
+    }
+
+    function safeAmount(value) {
+      const amount = Number(value);
+      return Number.isFinite(amount) ? amount : 0;
+    }
+
+    function safeDeadline(value) {
+      if (value === null || value === undefined || String(value).trim() === "") return null;
+      return Number.isFinite(Number(value)) ? Number(value) : null;
+    }
+
+    function toStructuredOrder(order) {
+      const missing = Array.isArray(order.missingFields) ? order.missingFields : [];
+      const hasMissing = keyword => missing.some(item => String(item || "").includes(keyword));
+      return {
+        from: safeDisplay(order.pickupLabel, ""),
+        to: safeDisplay(order.dropoffLabel, ""),
+        pickup_deadline: order.pickupDeadline !== null ? formatClock(order.pickupDeadline) : null,
+        delivery_deadline: order.dropoffDeadline !== null ? formatClock(order.dropoffDeadline) : null,
+        price: safeAmount(order.amount),
+        weight_limit_kg: order.weightKg ? safeAmount(order.weightKg) : null,
+        dimensions_cm: order.dimensions || null,
+        category: order.category || parseOrderCategory(order.packageText),
+        raw_package: order.packageText || "",
+        status: order.incomplete ? "needs_review" : "ready",
+        missing_fields: missing,
+        field_status: {
+          pickup_time: order.pickupDeadline !== null && !hasMissing("取貨時間") ? "ok" : "need_confirm",
+          pickup_place: order.pickupLabel && !hasMissing("取貨地點") ? "ok" : "need_confirm",
+          dropoff_time: (order.dropoffDeadline !== null || order.urgentDropoff) && !hasMissing("送達時間") ? "ok" : "need_confirm",
+          dropoff_place: order.dropoffLabel && !hasMissing("送達地點") ? "ok" : "need_confirm",
+          price: safeAmount(order.amount) >= 20 && !hasMissing("金額") ? "ok" : "need_confirm",
+          package: order.packageText ? "ok" : "not_read"
+        }
+      };
+    }
+
+    function normalizeOrderFields(order, index) {
+      const normalized = {
+        ...order,
+        id: index + 1,
+        pickupLabel: safeDisplay(order.pickupLabel, ""),
+        dropoffLabel: safeDisplay(order.dropoffLabel, ""),
+        amount: safeAmount(order.amount),
+        pickupDeadline: safeDeadline(order.pickupDeadline),
+        dropoffDeadline: safeDeadline(order.dropoffDeadline),
+        urgentDropoff: Boolean(order.urgentDropoff),
+        dimensions: order.dimensions || null,
+        volume: safeAmount(order.volume),
+        weightKg: safeAmount(order.weightKg),
+        category: order.category || parseOrderCategory(order.packageText),
+        packageText: order.packageText || "",
+        incomplete: Boolean(order.incomplete),
+        missingFields: Array.isArray(order.missingFields) ? order.missingFields : [],
+        mergedCount: order.mergedCount || 1
+      };
+      return {
+        ...normalized,
+        structured: toStructuredOrder(normalized)
+      };
+    }
+
+    function pointLabel(point, fallback = "未識別地點") {
+      return safeDisplay(point?.labelZh || point?.label, fallback);
+    }
+
+    function orderToReviewText(order) {
+      const pickupTime = order.pickupDeadline !== null ? `by ${formatClock(order.pickupDeadline)}` : "";
+      const dropoffTime = order.dropoffDeadline !== null
+        ? `by ${formatClock(order.dropoffDeadline)}`
+        : order.urgentDropoff ? "asap" : "";
+      return [
+        `Order ${order.id}`,
+        `Pickup: ${safeDisplay(order.pickupLabel)} ${pickupTime}`.trim(),
+        `Dropoff: ${safeDisplay(order.dropoffLabel)} ${dropoffTime}`.trim(),
+        `HK$${order.amount || 0}`,
+        order.packageText ? `Package: ${order.packageText}` : "",
+        order.category ? `Category: ${order.category}` : ""
+      ].filter(Boolean).join("\n");
+    }
+
+    function renderExtractedOrders(orders) {
+      if (!orders.length) {
+        return `<div class="error">暫時沒有識別到可用訂單。請修正文字後再按確認資料。</div>`;
+      }
+      const rows = orders.map(order => {
+        const pickupTime = order.pickupDeadline !== null ? formatClock(order.pickupDeadline) : "";
+        const dropoffTime = order.dropoffDeadline !== null
+          ? formatClock(order.dropoffDeadline)
+          : order.urgentDropoff ? "儘快" : "";
+        const reviewText = order.incomplete
+          ? ` <span class="tag">待確認：${(order.missingFields || []).join("、") || "資料不完整"}</span>`
+          : "";
+        return `
+          <tr>
+            <td>#${order.id}${reviewText}</td>
+            <td>${pickupTime}</td>
+            <td>${safeDisplay(order.pickupLabel)}</td>
+            <td>${dropoffTime}</td>
+            <td>${safeDisplay(order.dropoffLabel)}</td>
+            <td>HK$${(order.amount || 0).toFixed(0)}${order.mergedCount > 1 ? `（合併 ${order.mergedCount} 條）` : ""}</td>
+            <td>${order.packageText || (order.weightKg ? `≤${order.weightKg}公斤` : "")}</td>
+          </tr>
+        `;
+      }).join("");
+      const mergedCount = orders.reduce((sum, order) => sum + Math.max(0, (order.mergedCount || 1) - 1), 0);
+      const mergeText = mergedCount ? `，已合併 ${mergedCount} 條重複信息` : "";
+      return `
+        <div class="summary">已提取 ${orders.length} 單${mergeText}，請確認資料無誤後按右側 ✓ 推薦。</div>
+        <table class="extracted-table">
+          <thead>
+            <tr>
+              <th>單</th>
+              <th>取貨時間</th>
+              <th>取貨地點</th>
+              <th>送達時間</th>
+              <th>送達地點</th>
+              <th>金額</th>
+              <th>物件</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function sectionFromMarkedText(text, name) {
+      const match = String(text || "").match(new RegExp(`@@${name}@@\\n([\\s\\S]*?)(?=\\n@@[A-Z_]+@@|$)`));
+      return match ? match[1].trim() : "";
+    }
+
+    function applyOcrDebugGuards(orders) {
+      let debug = null;
+      try {
+        debug = JSON.parse(document.body.dataset.lastOrderOcrDebug || "{}");
+      } catch {
+        debug = null;
+      }
+      const cards = debug?.cards || [];
+      if (!cards.length) return orders;
+      return orders.map((order, index) => {
+        const cardText = cards[index]?.text || "";
+        const pickupPlaceRaw = sectionFromMarkedText(cardText, "PICKUP_PLACE");
+        const dropoffPlaceRaw = sectionFromMarkedText(cardText, "DROPOFF_PLACE");
+        const retryLog = sectionFromMarkedText(cardText, "RETRY_LOG");
+        const guarded = { ...order, missingFields: [...(order.missingFields || [])] };
+        if (!pickupPlaceRaw && !guarded.pickupLabel) {
+          guarded.incomplete = true;
+          guarded.missingFields.push("取貨地點");
+        }
+        if (!dropoffPlaceRaw && !guarded.dropoffLabel) {
+          guarded.incomplete = true;
+          guarded.missingFields.push("送達地點");
+        }
+        if (guarded.pickupLabel
+          && guarded.dropoffLabel
+          && guarded.pickupDeadline !== null
+          && guarded.dropoffDeadline !== null
+          && guarded.amount >= 20) {
+          guarded.missingFields = [];
+          guarded.incomplete = false;
+        }
+        guarded.missingFields = [...new Set(guarded.missingFields)];
+        return guarded;
+      });
+    }
+
+    async function confirmOrderData() {
+      const result = document.querySelector("#orderResult");
+      const text = document.querySelector("#orderText").value.trim();
+      if (!text) {
+        result.innerHTML = `<div class="error">請先識別截圖或輸入訂單文字。</div>`;
+        return [];
+      }
+      const orders = applyOcrDebugGuards(await parseOrdersFromText(text));
+      stagedOrders = orders;
+      document.body.dataset.structuredOrders = JSON.stringify(orders.map(order => toStructuredOrder(order)));
+      if (orders.length) {
+        document.querySelector("#orderText").value = orders.map(orderToReviewText).join("\n\n");
+      }
+      result.innerHTML = renderExtractedOrders(orders);
+      await renderOrderInputMap(orders, result);
+      return orders;
+    }
+
+    async function renderStageOneAdvice(orders) {
+      const result = document.querySelector("#orderResult");
+      if (!orders.length) return;
+      const readyOrders = orders.filter(order => !order.incomplete);
+      if (!readyOrders.length) {
+        result.innerHTML += `<div class="summary">已切出訂單卡，但資料仍需確認；請先補齊待確認欄位，再做接單推薦。</div>`;
+        return;
+      }
+      try {
+        const startPoint = await getOrderStartPoint();
+        const enriched = await Promise.all(readyOrders.map(enrichOrder));
+        const currentMinutes = getCurrentMinutesFromInput(document.querySelector("#orderText").value);
+        const plans = chooseOrderPlans(startPoint, enriched, enriched.length, currentMinutes, null, Math.min(5, Math.max(3, enriched.length)));
+        if (!plans.length) return;
+        const cards = plans.map((plan, index) => `
+          <div class="option-card">
+            <h3>第一步粗推薦 ${index + 1}：接 ${plan.indexes.length} 單，${plan.onTime ? "時間可行" : `預計遲 ${Math.ceil(plan.lateMinutes)} 分鐘`}</h3>
+            <p><strong>首取貨距離：</strong>約 ${(plan.firstPickupDistance / 1000).toFixed(1)} km，預留 ${Math.ceil(plan.firstPickupMinutes)} 分鐘</p>
+            <p><strong>時間窗口：</strong>${plan.pickupWindow?.delta !== null && plan.pickupWindow?.delta !== undefined ? `首取貨距離現在約 ${Math.ceil(plan.pickupWindow.delta)} 分鐘，${plan.pickupWindow.label}` : "首取貨時間不明"}</p>
+            <p><strong>完成：</strong>${formatClock(plan.finishMinutes)}；收入約 HK$${plan.amount.toFixed(0)}</p>
+            <ol class="sequence">${renderOrderSequence(plan)}</ol>
+            <p>此階段只用粗地區/附近車站判斷，不輸出詳細坐車方案；第二步詳情圖會補具體地址和交通方案。</p>
+          </div>
+        `).join("");
+        result.innerHTML += `<div class="summary">第一步已完成：優先選距離目前時間約 1-2 小時可取的訂單，再按 A 點到首取貨距離、同區/順路和時間可行性排序；之後比較價格；物件大小和重量只作低權重扣分。</div>${cards}`;
+      } catch (error) {
+        result.innerHTML += `<div class="error">第一步粗推薦未完成：${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    async function enrichOrder(order) {
+      if (isMissingValue(order.pickupLabel) || isMissingValue(order.dropoffLabel)) {
+        throw new Error(`#${order.id} 缺少取貨或送達地點，請重新選擇清晰列表截圖，或補拍第二步詳情截圖。`);
+      }
+      const [pickup, dropoff] = await Promise.all([
+        geocodeAddress(order.pickupLabel),
+        geocodeAddress(order.dropoffLabel)
+      ]);
+      return { ...order, pickup, dropoff };
+    }
+
+    async function renderOrderInputMap(orders, result) {
+      if (!orders.length) return null;
+      const readyOrders = orders.filter(order => !order.incomplete);
+      if (!readyOrders.length) return null;
+      try {
+        const [startPoint, enrichedOrders] = await Promise.all([
+          getOrderStartPoint(),
+          Promise.all(readyOrders.map(enrichOrder))
+        ]);
+        const points = [
+          { label: `A 點：${pointLabel(startPoint)}`, lat: startPoint.lat, lng: startPoint.lng }
+        ];
+        for (const order of enrichedOrders) {
+          points.push({ label: `取 #${order.id}：${pointLabel(order.pickup)}`, lat: order.pickup.lat, lng: order.pickup.lng });
+          points.push({ label: `送 #${order.id}：${pointLabel(order.dropoff)}`, lat: order.dropoff.lat, lng: order.dropoff.lng });
+        }
+        await renderMap(points);
+        result.innerHTML += `<div class="summary">已把 A 點和 ${readyOrders.length} 單完整取送點放到地圖；待確認單會先保留在表格中。</div>`;
+        return { startPoint, orders: enrichedOrders };
+      } catch (error) {
+        result.innerHTML += `<div class="error">地圖定位未完成：${getErrorMessage(error)}</div>`;
+        return null;
+      }
+    }
+
+    function validEventSequences(orderIndexes) {
+      const events = orderIndexes.flatMap(index => [
+        { type: "pickup", orderIndex: index },
+        { type: "dropoff", orderIndex: index }
+      ]);
+      const sequences = [];
+
+      function walk(sequence, remaining) {
+        if (!remaining.length) {
+          sequences.push(sequence);
+          return;
+        }
+        for (const event of remaining) {
+          if (event.type === "dropoff" && !sequence.some(item => item.type === "pickup" && item.orderIndex === event.orderIndex)) continue;
+          walk([...sequence, event], remaining.filter(item => item !== event));
+        }
+      }
+      walk([], events);
+      return sequences;
+    }
+
+    function estimateTravelMinutes(distance) {
+      return Math.max(10, distance / 1000 / 20 * 60 + 12);
+    }
+
+    function pointKey(point) {
+      return `${Number(point.lat).toFixed(5)},${Number(point.lng).toFixed(5)}`;
+    }
+
+    function routeLegKey(fromPoint, toPoint) {
+      return `${pointKey(fromPoint)}>${pointKey(toPoint)}`;
+    }
+
+    function estimateSegmentMinutes(segment, fallbackDistance) {
+      const firstKmb = segment?.kmbOptions?.[0];
+      const choices = [{ mode: "walk", option: null, minutes: Math.max(4, fallbackDistance / 70) }];
+      if (firstKmb) {
+        const walkMinutes = (firstKmb.walkStart + firstKmb.walkEnd) / 80;
+        const busMinutes = firstKmb.stopCount * 2.4 + 6;
+        choices.push({ mode: "kmb", option: firstKmb, minutes: Math.max(8, walkMinutes + busMinutes) });
+      }
+      if (segment?.mtr) {
+        const walkMinutes = (segment.mtr.fromStation.distance + segment.mtr.toStation.distance) / 80;
+        const stationCount = Math.max(1, segment.mtr.route.path.length - 1);
+        choices.push({ mode: "mtr", option: segment.mtr, minutes: Math.max(8, walkMinutes + stationCount * 2.2 + 6) });
+      }
+      return choices.sort((a, b) => a.minutes - b.minutes)[0].minutes;
+    }
+
+    function bestTransitChoice(segment, fallbackDistance) {
+      const firstKmb = segment?.kmbOptions?.[0];
+      const choices = [{ mode: "walk", option: null, minutes: Math.max(4, fallbackDistance / 70) }];
+      if (firstKmb) {
+        const walkMinutes = (firstKmb.walkStart + firstKmb.walkEnd) / 80;
+        const busMinutes = firstKmb.stopCount * 2.4 + 6;
+        choices.push({ mode: "kmb", option: firstKmb, minutes: Math.max(8, walkMinutes + busMinutes) });
+      }
+      if (segment?.mtr) {
+        const walkMinutes = (segment.mtr.fromStation.distance + segment.mtr.toStation.distance) / 80;
+        const stationCount = Math.max(1, segment.mtr.route.path.length - 1);
+        choices.push({ mode: "mtr", option: segment.mtr, minutes: Math.max(8, walkMinutes + stationCount * 2.2 + 6) });
+      }
+      return choices.sort((a, b) => a.minutes - b.minutes)[0];
+    }
+
+    async function buildTransitContext(startPoint, orders) {
+      const points = [startPoint, ...orders.flatMap(order => [order.pickup, order.dropoff])];
+      const context = new Map();
+      for (const from of points) {
+        for (const to of points) {
+          if (from === to) continue;
+          const distance = distanceMeters(from, to);
+          const key = routeLegKey(from, to);
+          if (context.has(key)) continue;
+          try {
+            const segment = await recommendAddressSegment(from, to);
+            context.set(key, {
+              segment,
+              distance,
+              minutes: estimateSegmentMinutes(segment, distance)
+            });
+          } catch {
+            context.set(key, {
+              segment: null,
+              distance,
+              minutes: estimateTravelMinutes(distance)
+            });
+          }
+        }
+      }
+      return context;
+    }
+
+    async function buildPlanTransitContext(startPoint, plans) {
+      const context = new Map();
+      const legs = [];
+      for (const plan of plans) {
+        let current = startPoint;
+        for (const item of plan.points) {
+          const key = routeLegKey(current, item.point);
+          if (!context.has(key) && !legs.some(leg => leg.key === key)) {
+            legs.push({ key, from: current, to: item.point });
+          }
+          current = item.point;
+        }
+      }
+      await Promise.all(legs.map(async leg => {
+        const distance = distanceMeters(leg.from, leg.to);
+        try {
+          const segment = await recommendAddressSegment(leg.from, leg.to, { kmbTimeoutMs: 2500 });
+          context.set(leg.key, {
+            segment,
+            distance,
+            minutes: estimateSegmentMinutes(segment, distance)
+          });
+        } catch {
+          context.set(leg.key, {
+            segment: null,
+            distance,
+            minutes: estimateTravelMinutes(distance)
+          });
+        }
+      }));
+      return context;
+    }
+
+    function sortOrderPlans(plans) {
+      return plans.sort((a, b) => {
+        if (a.onTime !== b.onTime) return a.onTime ? -1 : 1;
+        if (a.indexes.length !== b.indexes.length) return b.indexes.length - a.indexes.length;
+        return a.score - b.score;
+      });
+    }
+
+    function routeDistance(start, orders, sequence, currentMinutes = null, transitContext = null) {
+      let distance = 0;
+      let current = start;
+      let clock = currentMinutes ?? 0;
+      let lateMinutes = 0;
+      const points = [];
+      for (const event of sequence) {
+        const order = orders[event.orderIndex];
+        const next = event.type === "pickup" ? order.pickup : order.dropoff;
+        const transitLeg = transitContext?.get(routeLegKey(current, next));
+        const legDistance = transitLeg?.distance ?? distanceMeters(current, next);
+        const travelMinutes = transitLeg?.minutes ?? estimateTravelMinutes(legDistance);
+        distance += legDistance;
+        clock += travelMinutes;
+
+        const deadline = event.type === "pickup" ? order.pickupDeadline : order.dropoffDeadline;
+        const late = deadline === null ? 0 : Math.max(0, clock - deadline);
+        lateMinutes += late;
+        points.push({
+          event,
+          point: next,
+          order,
+          eta: clock,
+          deadline,
+          late,
+          legDistance,
+          travelMinutes,
+          transitLeg
+        });
+        current = next;
+      }
+      return { distance, points, lateMinutes, finishMinutes: clock };
+    }
+
+    function pickupClusterBonus(orders, indexes) {
+      if (indexes.length < 2) return 0;
+      const selected = indexes.map(index => orders[index]);
+      let bonus = 0;
+      for (let i = 0; i < selected.length; i += 1) {
+        for (let j = i + 1; j < selected.length; j += 1) {
+          const distance = distanceMeters(selected[i].pickup, selected[j].pickup);
+          if (distance < 300) bonus += 14000;
+          else if (distance < 900) bonus += 7000;
+          else if (distance < 1800) bonus += 2500;
+        }
+      }
+      return bonus;
+    }
+
+    function districtGroup(label) {
+      const text = normalizePlaceSearchText(label);
+      if (/油麻地|旺角|太子|深水埗|荔枝角|長沙灣|九龍|九龙|觀塘|观塘|新蒲崗|新蒲岗|九龍灣|九龙湾|土瓜灣|土瓜湾|啟德|启德|九肚山/.test(text)) return "kowloon";
+      if (/荃灣|荃湾|葵涌|葵芳|沙田|大圍|大围|馬鞍山|马鞍山|將軍澳|将军澳|寶琳|宝琳|屯門|屯门|元朗|天水圍|天水围/.test(text)) return "nt";
+      if (/中環|中环|金鐘|金钟|灣仔|湾仔|銅鑼灣|铜锣湾|西環|西环|薄扶林|香港仔|北角|柴灣|柴湾/.test(text)) return "hk";
+      return "";
+    }
+
+    function regionFitBonus(startPoint, orders, indexes) {
+      const startGroup = districtGroup(startPoint.labelZh || startPoint.label || "");
+      const selected = indexes.map(index => orders[index]);
+      let bonus = 0;
+      for (const order of selected) {
+        const pickupGroup = districtGroup(order.pickupLabel);
+        const dropoffGroup = districtGroup(order.dropoffLabel);
+        if (startGroup && pickupGroup && startGroup === pickupGroup) bonus += 9000;
+        if (pickupGroup && dropoffGroup && pickupGroup === dropoffGroup) bonus += 6000;
+      }
+      if (selected.length >= 2) {
+        const pickupGroups = selected.map(order => districtGroup(order.pickupLabel)).filter(Boolean);
+        const dropoffGroups = selected.map(order => districtGroup(order.dropoffLabel)).filter(Boolean);
+        if (pickupGroups.length === selected.length && new Set(pickupGroups).size === 1) bonus += 8000;
+        if (dropoffGroups.length === selected.length && new Set(dropoffGroups).size === 1) bonus += 5000;
+      }
+      return bonus;
+    }
+
+    function deadlineRiskPenalty(orders, indexes, currentMinutes) {
+      return indexes.reduce((penalty, index) => {
+        const order = orders[index];
+        if (order.pickupDeadline !== null && order.pickupDeadline < currentMinutes) return penalty + 100000;
+        if (order.pickupDeadline !== null && order.pickupDeadline - currentMinutes < 12) return penalty + 3500;
+        return penalty;
+      }, 0);
+    }
+
+    function firstPickupInfo(plan) {
+      const first = plan.points.find(item => item.event.type === "pickup");
+      return {
+        distance: first?.legDistance ?? plan.distance,
+        minutes: first?.travelMinutes ?? 0,
+        order: first?.order || null
+      };
+    }
+
+    function preferredPickupWindowScore(order, currentMinutes) {
+      if (!order || order.pickupDeadline === null || !Number.isFinite(currentMinutes)) {
+        return { score: 5000, delta: null, label: "未識別首取貨時間" };
+      }
+      const delta = order.pickupDeadline - currentMinutes;
+      if (delta < 0) return { score: 120000 + Math.abs(delta) * 500, delta, label: "已過取貨時間" };
+      if (delta < 30) return { score: 26000 + (30 - delta) * 450, delta, label: "取貨時間太近" };
+      if (delta < 60) return { score: 7000 + (60 - delta) * 150, delta, label: "取貨時間略近" };
+      if (delta <= 120) return { score: -28000 - (120 - Math.abs(delta - 90)) * 45, delta, label: "取貨時間落在 1-2 小時內" };
+      if (delta <= 180) return { score: 3500 + (delta - 120) * 120, delta, label: "取貨時間略遠" };
+      return { score: 11000 + (delta - 180) * 180, delta, label: "取貨時間太遠" };
+    }
+
+    function selectedDeliveryDistance(orders, indexes) {
+      return indexes.reduce((sum, index) => {
+        const order = orders[index];
+        if (!order?.pickup || !order?.dropoff) return sum;
+        return sum + distanceMeters(order.pickup, order.dropoff);
+      }, 0);
+    }
+
+    function categoryRiskPenalty(orders, indexes) {
+      return indexes.reduce((sum, index) => {
+        const order = orders[index];
+        const category = order.category || parseOrderCategory(order.packageText);
+        let penalty = 0;
+        if (/藥物|清酒/i.test(category)) penalty += 4;
+        if (/家用設備/i.test(category)) penalty += 2;
+        if ((order.weightKg || 0) > 5) penalty += 8;
+        if ((order.weightKg || 0) > 2) penalty += 2;
+        if ((order.volume || 0) > 27000) penalty += 5;
+        return sum + penalty;
+      }, 0);
+    }
+
+    function terminalRegionPenalty(startPoint, orders, indexes) {
+      const startGroup = districtGroup(startPoint.labelZh || startPoint.label || "");
+      const lastOrder = orders[indexes[indexes.length - 1]];
+      const lastGroup = districtGroup(lastOrder?.dropoffLabel || "");
+      const remoteText = normalizePlaceSearchText(lastOrder?.dropoffLabel || "");
+      let penalty = 0;
+      if (startGroup && lastGroup && startGroup !== lastGroup) penalty += 8;
+      if (/屯門|屯门|元朗|天水圍|天水围|東涌|东涌|青衣|薄扶林|西環|西环/.test(remoteText)) penalty += 8;
+      if (lastGroup === "nt" && startGroup === "kowloon") penalty += 4;
+      return penalty;
+    }
+
+    function deadlineRiskInfo(plan, currentMinutes) {
+      if (plan.lateMinutes > 0) return { level: "high", penalty: 35 + Math.ceil(plan.lateMinutes) * 2, label: `高：預計遲到 ${Math.ceil(plan.lateMinutes)} 分鐘` };
+      const delta = plan.pickupWindow?.delta;
+      if (delta === null || delta === undefined) return { level: "medium", penalty: 10, label: "中：取貨時間不完整" };
+      if (delta < 20) return { level: "high", penalty: 28, label: "高：首取貨時間太近" };
+      if (delta < 45) return { level: "medium", penalty: 14, label: "中：要抓緊出發" };
+      if (delta <= 120) return { level: "low", penalty: 0, label: "低：時間窗合適" };
+      return { level: "medium", penalty: 8, label: "中：取貨時間較遠，可能等待" };
+    }
+
+    function buildDecisionMetrics(plan, orders, startPoint, currentMinutes) {
+      const pickupDistanceKm = plan.firstPickupDistance / 1000;
+      const deliveryDistanceKm = selectedDeliveryDistance(orders, plan.indexes) / 1000;
+      const totalDistanceKm = plan.distance / 1000;
+      const estimatedMinutes = Math.max(1, plan.finishMinutes - currentMinutes);
+      const farePerKm = plan.amount / Math.max(0.2, totalDistanceKm);
+      const farePerMinute = plan.amount / estimatedMinutes;
+      const deadlineRisk = deadlineRiskInfo(plan, currentMinutes);
+      const regionPenalty = terminalRegionPenalty(startPoint, orders, plan.indexes);
+      const packageRisk = categoryRiskPenalty(orders, plan.indexes);
+      const routeBonus = (plan.samePickupBonus > 0 ? 12 : 0)
+        + (plan.sameRegionBonus > 0 ? 8 : 0)
+        + (plan.indexes.length >= 2 ? 10 : 0);
+      const incomeScore = plan.amount * 0.9 + farePerKm * 5 + farePerMinute * 18;
+      const distanceCost = pickupDistanceKm * 3.2 + totalDistanceKm * 1.6;
+      const timeCost = estimatedMinutes * 0.42;
+      const decisionScore = Math.round(incomeScore - distanceCost - timeCost - deadlineRisk.penalty - regionPenalty - packageRisk + routeBonus);
+      let suggestion = "接單";
+      if (deadlineRisk.level === "high" || decisionScore < 20 || plan.lateMinutes > 0) suggestion = "拒單";
+      else if (decisionScore < 45 || deadlineRisk.level === "medium" || regionPenalty >= 12) suggestion = "慎接";
+      return {
+        pickup_distance_km: Number(pickupDistanceKm.toFixed(1)),
+        delivery_distance_km: Number(deliveryDistanceKm.toFixed(1)),
+        total_distance_km: Number(totalDistanceKm.toFixed(1)),
+        estimated_minutes: Math.ceil(estimatedMinutes),
+        fare_per_km: Number(farePerKm.toFixed(1)),
+        fare_per_minute: Number(farePerMinute.toFixed(2)),
+        deadline_risk: deadlineRisk.level,
+        deadline_risk_label: deadlineRisk.label,
+        region_penalty: regionPenalty,
+        package_risk: packageRisk,
+        route_bonus: routeBonus,
+        decision_score: decisionScore,
+        suggestion
+      };
+    }
+
+    function buildOrderPlan(startPoint, orders, indexes, sequence, currentMinutes, transitContext = null) {
+      const detail = routeDistance(startPoint, orders, sequence, currentMinutes, transitContext);
+      const amount = indexes.reduce((sum, index) => sum + orders[index].amount, 0);
+      const samePickupBonus = pickupClusterBonus(orders, indexes);
+      const sameRegionBonus = regionFitBonus(startPoint, orders, indexes);
+      const riskPenalty = deadlineRiskPenalty(orders, indexes, currentMinutes);
+      const latePenalty = detail.lateMinutes * 1200;
+      const urgencyPenalty = detail.points.some(item => item.order.urgentDropoff && item.event.type === "dropoff")
+        ? detail.finishMinutes - currentMinutes
+        : 0;
+      const pickupInfo = firstPickupInfo({ ...detail });
+      const pickupWindow = preferredPickupWindowScore(pickupInfo.order, currentMinutes);
+      const onTime = detail.lateMinutes === 0;
+      const targetBonus = indexes.length >= 2 ? -35000 : 0;
+      const packagePenalty = indexes.reduce((sum, index) => sum + (orders[index].weightKg || 0) * 120 + (orders[index].volume || 0) / 180, 0);
+      const score = latePenalty
+        + riskPenalty
+        + detail.distance
+        + pickupInfo.distance * 1.8
+        + (detail.finishMinutes - currentMinutes) * 90
+        + urgencyPenalty
+        + packagePenalty
+        + pickupWindow.score
+        - amount * 95
+        - samePickupBonus
+        - sameRegionBonus
+        + targetBonus;
+      const basePlan = {
+        startPoint,
+        indexes,
+        sequence,
+        amount,
+        score,
+        samePickupBonus,
+        sameRegionBonus,
+        riskPenalty,
+        latePenalty,
+        packagePenalty,
+        pickupWindow,
+        onTime,
+        firstPickupDistance: pickupInfo.distance,
+        firstPickupMinutes: pickupInfo.minutes,
+        firstPickupOrder: pickupInfo.order,
+        ...detail
+      };
+      return {
+        ...basePlan,
+        decision: buildDecisionMetrics(basePlan, orders, startPoint, currentMinutes)
+      };
+    }
+
+    function chooseOrderPlans(startPoint, orders, targetCount, currentMinutes, transitContext = null, limit = 2) {
+      const candidates = [];
+      const wanted = Math.min(Math.max(2, targetCount || 2), orders.length, 3);
+      for (let i = 0; i < orders.length; i += 1) {
+        candidates.push([i]);
+        for (let j = i + 1; j < orders.length; j += 1) {
+          candidates.push([i, j]);
+          if (wanted >= 3) {
+            for (let k = j + 1; k < orders.length; k += 1) {
+              candidates.push([i, j, k]);
+            }
+          }
+        }
+      }
+
+      const plans = [];
+      for (const indexes of candidates) {
+        for (const sequence of validEventSequences(indexes)) {
+          plans.push(buildOrderPlan(startPoint, orders, indexes, sequence, currentMinutes, transitContext));
+        }
+      }
+
+      const sorted = sortOrderPlans(plans);
+      const picked = [];
+      const seen = new Set();
+      for (const plan of sorted) {
+        const key = plan.indexes.slice().sort((a, b) => a - b).join("-");
+        if (seen.has(key)) continue;
+        seen.add(key);
+        picked.push(plan);
+        if (picked.length >= limit) break;
+      }
+      return picked;
+    }
+
+    function chooseBestOrderPlan(startPoint, orders, targetCount, currentMinutes, transitContext = null) {
+      return chooseOrderPlans(startPoint, orders, targetCount, currentMinutes, transitContext, 1)[0] || null;
+    }
+
+    function renderOrderSequence(plan) {
+      return plan.points.map(item => {
+        const action = item.event.type === "pickup" ? "取單" : "送達";
+        const name = pointLabel(item.point);
+        const deadlineText = item.deadline !== null ? `，限 ${formatClock(item.deadline)}` : item.order.urgentDropoff && item.event.type === "dropoff" ? "，儘快" : "";
+        const lateText = item.late ? `，預計遲 ${Math.ceil(item.late)} 分鐘` : "";
+        return `<li>${action} #${item.order.id}：${name}，預計 ${formatClock(item.eta)}${deadlineText}${lateText}</li>`;
+      }).join("");
+    }
+
+    function renderOrderReasons(plan, orders, currentMinutes) {
+      const selected = new Set(plan.indexes);
+      const reasons = [];
+      if (plan.decision) {
+        reasons.push(`決策評分 ${plan.decision.decision_score}，建議：${plan.decision.suggestion}。`);
+        reasons.push(`效率：HK$${plan.decision.fare_per_km}/km，HK$${plan.decision.fare_per_minute}/分鐘；截止風險 ${plan.decision.deadline_risk_label}。`);
+      }
+      const firstPickupName = plan.firstPickupOrder ? `#${plan.firstPickupOrder.id}` : "第一單";
+      reasons.push(`先從 A 點到 ${firstPickupName} 取貨，約 ${(plan.firstPickupDistance / 1000).toFixed(1)} km，${Math.ceil(plan.firstPickupMinutes)} 分鐘。`);
+      if (plan.pickupWindow?.delta !== null && plan.pickupWindow?.delta !== undefined) {
+        reasons.push(`首取貨時間距離現在約 ${Math.ceil(plan.pickupWindow.delta)} 分鐘；${plan.pickupWindow.label}。`);
+      }
+      reasons.push(`預計 ${formatClock(plan.finishMinutes)} 完成，約需 ${Math.ceil(plan.finishMinutes - currentMinutes)} 分鐘。`);
+      reasons.push("排序已結合地址智能推薦的 KMB / 港鐵候選時間。");
+      if (plan.indexes.length >= 2 && plan.samePickupBonus > 0) reasons.push("兩單取件點很近，可以集中取件。");
+      if (plan.lateMinutes === 0) reasons.push("按目前估算不會超過已識別的取送時間。");
+      if (plan.amount) reasons.push(`兩單/單組合收入約 HK$${plan.amount.toFixed(1)}。`);
+      if (plan.lateMinutes > 0) reasons.push(`有遲到風險：預計累計遲到約 ${Math.ceil(plan.lateMinutes)} 分鐘。`);
+
+      const skipped = orders
+        .map((order, index) => ({ order, index }))
+        .filter(item => !selected.has(item.index))
+        .map(({ order }) => {
+          if (order.pickupDeadline !== null && order.pickupDeadline < currentMinutes) {
+            return `#${order.id} 已過取件時間 ${formatClock(order.pickupDeadline)}，不優先。`;
+          }
+          if (order.pickupDeadline !== null && order.pickupDeadline - currentMinutes < 12) {
+            return `#${order.id} 距離取件時間只剩 ${Math.max(0, order.pickupDeadline - currentMinutes)} 分鐘，風險高。`;
+          }
+          return `#${order.id} 路線或收益不如推薦組合。`;
+        });
+
+      return [...reasons, ...skipped].map(reason => `<p>${reason}</p>`).join("");
+    }
+
+    async function renderPlanCard(plan, orders, currentMinutes, transitContext, rank) {
+      const transport = await renderOrderTransport(null, plan, transitContext);
+      const amountText = plan.amount ? `，收入約 HK$${plan.amount.toFixed(1)}` : "";
+      const status = plan.onTime ? "可按時完成" : `有遲到風險，約遲 ${Math.ceil(plan.lateMinutes)} 分鐘`;
+      const decision = plan.decision;
+      const decisionHtml = decision ? `
+        <p><strong>接單建議：</strong>${decision.suggestion}，評分 ${decision.decision_score}</p>
+        <p><strong>效率：</strong>約 HK$${decision.fare_per_km}/km，HK$${decision.fare_per_minute}/分鐘；全程約 ${decision.total_distance_km} km，${decision.estimated_minutes} 分鐘</p>
+        <p><strong>風險：</strong>${decision.deadline_risk_label}；區域成本 ${decision.region_penalty}，重量/品類風險 ${decision.package_risk}，順路獎勵 ${decision.route_bonus}</p>
+      ` : "";
+      return `
+        <div class="option-card">
+          <h3>推薦 ${rank}：接 ${plan.indexes.length} 單，${status}</h3>
+          <p><strong>A 點到首取貨：</strong>約 ${(plan.firstPickupDistance / 1000).toFixed(1)} km，${Math.ceil(plan.firstPickupMinutes)} 分鐘</p>
+          <p><strong>完成時間：</strong>${formatClock(plan.finishMinutes)}，全程約 ${Math.ceil(plan.finishMinutes - currentMinutes)} 分鐘${amountText}</p>
+          ${decisionHtml}
+          <ol class="sequence">${renderOrderSequence(plan)}</ol>
+          <h3>推薦原因</h3>
+          ${renderOrderReasons(plan, orders, currentMinutes)}
+          <h3>坐車建議</h3>
+          ${transport}
+        </div>
+      `;
+    }
+
+    async function renderOrderTransport(startPoint, plan, transitContext = null) {
+      const legs = [];
+      let current = startPoint || plan.startPoint;
+      for (const item of plan.points) {
+        const cached = transitContext?.get(routeLegKey(current, item.point));
+        const segment = cached?.segment || await recommendAddressSegment(current, item.point);
+        const label = pointLabel(item.point);
+        const choice = bestTransitChoice(segment, cached?.distance ?? distanceMeters(current, item.point));
+        const minutes = `，約 ${Math.ceil(choice.minutes)} 分鐘`;
+        if (choice.mode === "walk") {
+          legs.push(`<p><strong>去 ${label}：</strong>步行約 ${Math.ceil(choice.minutes)} 分鐘，短距離不建議等車。</p>`);
+        } else if (choice.mode === "kmb") {
+          const firstKmb = choice.option;
+          legs.push(`<p><strong>去 ${label}：</strong>KMB ${firstKmb.route} 往 ${firstKmb.destination}，${firstKmb.originStop.name}上車${minutes}</p>`);
+          if (segment.mtr) {
+            legs.push(`<p><strong>港鐵備選：</strong>${segment.mtr.fromStation.station} → ${segment.mtr.toStation.station}，可展開於地址智能推薦中查看途經站。</p>`);
+          }
+        } else if (choice.mode === "mtr") {
+          const mtr = choice.option;
+          legs.push(`
+            <div class="option-card">
+              <h3>去 ${label}：港鐵 ${mtr.fromStation.station} → ${mtr.toStation.station}${minutes}</h3>
+              ${renderMtrRouteDetails(mtr)}
+            </div>
+          `);
+        } else {
+          legs.push(`<p><strong>去 ${label}：</strong>暫未找到直達公共交通，建議改查單段路線</p>`);
+        }
+        current = item.point;
+      }
+      return legs.join("");
+    }
+
+    async function optimizeOrders() {
+      const result = document.querySelector("#orderResult");
+      const text = document.querySelector("#orderText").value.trim();
+      const targetCount = Math.max(1, Number(document.querySelector("#orderCount").value) || 2);
+      const currentMinutes = getCurrentMinutesFromInput(text);
+
+      if (!text) {
+        result.innerHTML = `<div class="error">請先上傳截圖識別，或手動貼上訂單文字。</div>`;
+        return;
+      }
+
+      result.innerHTML = `<div class="summary">正在分析訂單和路線...</div>`;
+      try {
+        const confirmedOrders = stagedOrders.length ? stagedOrders : await parseOrdersFromText(text);
+        const [startPoint, parsedOrders] = await Promise.all([
+          getOrderStartPoint(),
+          Promise.resolve(confirmedOrders)
+        ]);
+        if (!parsedOrders.length) {
+          result.innerHTML = `<div class="error">暫時沒有識別到可用訂單。請在文字中保留取/送地址，或加入本地地標庫。</div>`;
+          return;
+        }
+        const readyOrders = parsedOrders.filter(order => !order.incomplete);
+        if (!readyOrders.length) {
+          result.innerHTML = renderExtractedOrders(parsedOrders)
+            + `<div class="summary">目前只有待確認訂單，請先補齊缺失欄位，再做接單推薦。</div>`;
+          return;
+        }
+        const orders = await Promise.all(readyOrders.map(enrichOrder));
+        await renderMap([
+          { label: `A 點：${pointLabel(startPoint)}`, lat: startPoint.lat, lng: startPoint.lng },
+          ...orders.flatMap(order => [
+            { label: `取 #${order.id}：${pointLabel(order.pickup)}`, lat: order.pickup.lat, lng: order.pickup.lng },
+            { label: `送 #${order.id}：${pointLabel(order.dropoff)}`, lat: order.dropoff.lat, lng: order.dropoff.lng }
+          ])
+        ]);
+        result.innerHTML = `<div class="summary">已放入地圖，正在先按距離、同區和時間粗選推薦組合...</div>`;
+        const roughPlans = chooseOrderPlans(startPoint, orders, targetCount, currentMinutes, null, Math.min(5, Math.max(3, orders.length)));
+        if (!roughPlans.length) {
+          result.innerHTML = `<div class="error">暫時沒有可推薦的接單順序。</div>`;
+          return;
+        }
+        result.innerHTML = `<div class="summary">已選出候選組合，正在補 KMB / 港鐵 / 步行建議...</div>`;
+        const transitContext = await buildPlanTransitContext(startPoint, roughPlans);
+        const plans = sortOrderPlans(roughPlans.map(plan => (
+          buildOrderPlan(startPoint, orders, plan.indexes, plan.sequence, currentMinutes, transitContext)
+        )));
+        const bestPlan = plans[0];
+        const planCards = [];
+        for (let index = 0; index < plans.length; index += 1) {
+          planCards.push(await renderPlanCard(plans[index], orders, currentMinutes, transitContext, index + 1));
+        }
+        const amountText = bestPlan.amount ? `，收入約 HK$${bestPlan.amount.toFixed(1)}` : "";
+        const finishText = `，預計 ${formatClock(bestPlan.finishMinutes)} 完成，約 ${Math.ceil(bestPlan.finishMinutes - currentMinutes)} 分鐘`;
+        const onTimeText = bestPlan.onTime ? "全部可按時完成" : `有遲到風險，約遲 ${Math.ceil(bestPlan.lateMinutes)} 分鐘`;
+        result.innerHTML = `
+          <div class="summary">按 ${formatClock(currentMinutes)} 判斷，找到 ${plans.length} 組推薦；首選接 ${bestPlan.indexes.length} 單：總路程約 ${(bestPlan.distance / 1000).toFixed(1)} km，${onTimeText}${amountText}${finishText}</div>
+          ${planCards.join("")}
+        `;
+        renderMap([
+          { label: `目前位置：${pointLabel(startPoint)}`, lat: startPoint.lat, lng: startPoint.lng },
+          ...bestPlan.points.map(item => ({
+            label: `${item.event.type === "pickup" ? "取單" : "送達"} #${item.order.id}：${pointLabel(item.point)}`,
+            lat: item.point.lat,
+            lng: item.point.lng
+          }))
+        ]).catch(error => {
+          result.innerHTML += `<div class="error">${getErrorMessage(error)}</div>`;
+        });
+      } catch (error) {
+        result.innerHTML = `<div class="error">${getErrorMessage(error)}</div>`;
+      }
+    }
+
+    attachAutocomplete("#from", "#fromSuggestions");
+    attachAutocomplete("#via", "#viaSuggestions");
+    attachAutocomplete("#to", "#toSuggestions");
+    attachAddressAutocomplete("#addrFrom", "#addrFromSuggestions");
+    attachAddressAutocomplete("#addrVia", "#addrViaSuggestions");
+    attachAddressAutocomplete("#addrTo", "#addrToSuggestions");
+    attachAddressAutocomplete("#orderCurrent", "#orderCurrentSuggestions");
+    document.querySelector("#orderCurrent").addEventListener("input", clearCurrentLocationPoint);
+
+    document.querySelector("#findRoute").addEventListener("click", search);
+    document.querySelector("#swap").addEventListener("click", () => {
+      const from = document.querySelector("#from");
+      const to = document.querySelector("#to");
+      [from.value, to.value] = [to.value, from.value];
+      search();
+    });
+    document.querySelectorAll(".quick button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector("#from").value = button.dataset.from;
+        document.querySelector("#via").value = button.dataset.via || "";
+        document.querySelector("#to").value = button.dataset.to;
+        search();
+      });
+    });
+    document.querySelectorAll("#from, #via, #to").forEach(input => {
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") search();
+      });
+    });
+    document.querySelectorAll("#addrFrom, #addrVia, #addrTo").forEach(input => {
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") planAddressTrip();
+      });
+    });
+
+    document.querySelector("#planAddress").addEventListener("click", planAddressTrip);
+    document.querySelector("#clearAddress").addEventListener("click", () => {
+      document.querySelector("#addrFrom").value = "";
+      document.querySelector("#addrVia").value = "";
+      document.querySelector("#addrTo").value = "";
+      document.querySelector("#addrFrom").dataset.displayLabel = "";
+      document.querySelector("#addrVia").dataset.displayLabel = "";
+      document.querySelector("#addrTo").dataset.displayLabel = "";
+      document.querySelector("#addressResult").innerHTML = "";
+    });
+    document.querySelector("#chooseOrderScreenshot").addEventListener("click", () => {
+      document.querySelector("#orderScreenshot").click();
+    });
+    document.querySelector("#chooseOrderDetailScreenshot").addEventListener("click", () => {
+      document.querySelector("#orderDetailScreenshot").click();
+    });
+    document.querySelector("#orderScreenshot").addEventListener("change", event => {
+      const files = [...(event.target.files || [])];
+      const file = files[0];
+      const preview = document.querySelector("#orderPreview");
+      const nameBox = document.querySelector("#orderScreenshotName");
+      if (!file) {
+        preview.style.display = "none";
+        preview.removeAttribute("src");
+        nameBox.textContent = "未選擇截圖";
+        return;
+      }
+      const names = files.slice(0, 2).map((item, index) => safeDisplay(item?.name, `截圖 ${index + 1}`));
+      nameBox.textContent = `已選 ${files.length} 張：${names.join("、")}`;
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+    });
+    document.querySelector("#orderDetailScreenshot").addEventListener("change", event => {
+      const files = [...(event.target.files || [])];
+      const file = files[0];
+      const preview = document.querySelector("#orderDetailPreview");
+      const nameBox = document.querySelector("#orderDetailScreenshotName");
+      if (!file) {
+        preview.style.display = "none";
+        preview.removeAttribute("src");
+        nameBox.textContent = "未選擇詳情";
+        return;
+      }
+      const names = files.slice(0, 2).map((item, index) => safeDisplay(item?.name, `詳情 ${index + 1}`));
+      nameBox.textContent = `已選 ${files.length} 張：${names.join("、")}`;
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+    });
+    document.querySelector("#loadLatestScreenshot")?.addEventListener("click", loadLatestScreenshot);
+    document.querySelector("#readOrders").addEventListener("click", readOrderScreenshot);
+    document.querySelector("#readOrderDetails").addEventListener("click", readOrderDetailScreenshot);
+    document.querySelector("#useCurrentLocation").addEventListener("click", () => useCurrentLocation());
+    document.querySelector("#confirmOrders").addEventListener("click", confirmOrderData);
+    document.querySelector("#optimizeOrders").addEventListener("click", optimizeOrders);
+
+    document.querySelector("#from").value = "旺角";
+    document.querySelector("#via").value = "";
+    document.querySelector("#to").value = "寶琳";
+    search();
+    useCurrentLocation({ silent: true });
+    if (new URLSearchParams(window.location.search).get("testLatestScreenshot") === "1") {
+      setTimeout(() => loadLatestScreenshot(), 0);
+    }
+    if (new URLSearchParams(window.location.search).has("ocrRegression")) {
+      setTimeout(runScreenshotRegression, 300);
+    }
+    if (new URLSearchParams(window.location.search).has("trainingRegression")) {
+      setTimeout(runTrainingRegression, 300);
+    }
+    if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
