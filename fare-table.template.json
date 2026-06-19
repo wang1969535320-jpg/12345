@@ -1,0 +1,25 @@
+{
+  "currency": "HKD",
+  "fareTypes": [
+    "adultOctopus",
+    "adultSingleJourney",
+    "childOctopus",
+    "childSingleJourney"
+  ],
+  "pairs": {
+    "旺角|寶琳": {
+      "adultOctopus": null,
+      "adultSingleJourney": null,
+      "childOctopus": null,
+      "childSingleJourney": null,
+      "source": "Fill from MTR Ticket Suggestion or official fare table"
+    },
+    "香港|機場": {
+      "adultOctopus": 120,
+      "adultSingleJourney": 130,
+      "childOctopus": 60,
+      "childSingleJourney": 65,
+      "source": "MTR Airport Express fare table"
+    }
+  }
+}
